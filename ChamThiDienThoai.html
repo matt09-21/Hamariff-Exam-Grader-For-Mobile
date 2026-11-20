@@ -1,0 +1,3218 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1B2A4A">
+<title>Hamariff · Chấm thi bằng điện thoại</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #1B2A4A; --navy-2: #131E36; --pink: #D81B60; --pink-d: #AD1457; --pink-s: #FCE4EE;
+  --bg: #F4F6FA; --card: #FFFFFF; --line: #E3E6EC; --text: #1F2937; --muted: #6B7280;
+  --ok: #2E7D32; --ok-s: #E8F5E9; --bad: #D32F2F; --bad-s: #FFEBEE; --warn: #B26A00; --warn-b: #F9A825; --warn-s: #FFF8E1;
+  --info: #1565C0; --info-s: #E3F2FD; --r: 14px; --shadow: 0 1px 2px rgba(17, 24, 39, .06), 0 2px 8px rgba(17, 24, 39, .05);
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; background: var(--bg); color: var(--text); }
+body { font: 15px/1.45 "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-text-size-adjust: 100%; }
+button, input, select, textarea { font: inherit; color: inherit; }
+.hidden { display: none !important; }
+
+/* ---------- khung */
+.top { position: sticky; top: 0; z-index: 20; background: var(--navy); color: #fff; padding: 12px 16px 12px; display: flex; align-items: center; gap: 10px; }
+.logo { width: 34px; height: 34px; border-radius: 10px; background: var(--pink); display: grid; place-items: center; flex: none; }
+.logo svg { width: 20px; height: 20px; }
+.top h1 { font-size: 16px; line-height: 1.2; margin: 0; font-weight: 700; letter-spacing: .1px; }
+.top .sub { font-size: 12px; opacity: .72; margin-top: 1px; }
+.top .sync { margin-left: auto; font-size: 11.5px; padding: 4px 9px; border-radius: 999px; background: rgba(255, 255, 255, .12); white-space: nowrap; }
+main { max-width: 620px; margin: 0 auto; padding: 14px 14px calc(96px + env(safe-area-inset-bottom)); }
+.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; background: #fff; border-top: 1px solid var(--line); display: flex; justify-content: center; padding-bottom: env(safe-area-inset-bottom); }
+.tabs .in { display: flex; width: 100%; max-width: 620px; }
+.tab { flex: 1; border: 0; background: none; padding: 9px 4px 10px; display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--muted); font-size: 12.5px; font-weight: 600; cursor: pointer; position: relative; }
+.tab svg { width: 23px; height: 23px; }
+.tab.on { color: var(--pink); }
+.tab.on::before { content: ""; position: absolute; top: 0; left: 28%; right: 28%; height: 3px; border-radius: 0 0 3px 3px; background: var(--pink); }
+.tab .badge { position: absolute; top: 5px; left: calc(50% + 8px); min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--pink); color: #fff; font-size: 11px; line-height: 18px; text-align: center; }
+
+/* ---------- thẻ */
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); padding: 16px; margin-bottom: 14px; }
+.card h2 { font-size: 15.5px; margin: 0 0 4px; display: flex; align-items: center; gap: 8px; }
+.card h2 .step { width: 24px; height: 24px; border-radius: 50%; background: var(--pink-s); color: var(--pink-d); font-size: 13px; display: grid; place-items: center; flex: none; }
+.card .hint { color: var(--muted); font-size: 13.5px; margin: 0 0 12px; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.row > .grow { flex: 1 1 auto; min-width: 0; }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+.mt { margin-top: 12px; }
+.mt-s { margin-top: 8px; }
+
+/* ---------- nút */
+.btn { border: 1px solid var(--line); background: #fff; border-radius: 12px; padding: 10px 14px; font-weight: 600; font-size: 14.5px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; text-decoration: none; color: var(--text); }
+.btn svg { width: 19px; height: 19px; flex: none; }
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: .45; cursor: default; }
+.btn.primary { background: var(--pink); border-color: var(--pink); color: #fff; }
+.btn.primary:active { background: var(--pink-d); }
+.btn.navy { background: var(--navy); border-color: var(--navy); color: #fff; }
+.btn.danger { color: var(--bad); border-color: #F4C7C7; }
+.btn.ghost { border-color: transparent; background: transparent; color: var(--muted); padding: 8px 10px; min-height: 36px; }
+.btn.block { width: 100%; }
+.btn.big { min-height: 64px; font-size: 17px; border-radius: 16px; }
+.btn.big svg { width: 26px; height: 26px; }
+label.btn input[type=file] { display: none; }
+
+/* ---------- ô nhập */
+.field { display: block; margin-bottom: 10px; }
+.field > span { display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 4px; }
+.field small { color: var(--muted); font-weight: 400; }
+.input, textarea.input, select.input { width: 100%; border: 1px solid #D5D9E1; border-radius: 10px; padding: 10px 12px; background: #fff; min-height: 44px; }
+textarea.input { min-height: 64px; resize: vertical; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 14.5px; letter-spacing: .5px; }
+.input:focus { outline: 2px solid rgba(216, 27, 96, .25); border-color: var(--pink); }
+.seg { display: flex; border: 1px solid #D5D9E1; border-radius: 12px; overflow: hidden; }
+.seg button { flex: 1; border: 0; background: #fff; padding: 10px 8px; font-weight: 600; font-size: 13.5px; cursor: pointer; min-height: 44px; }
+.seg button + button { border-left: 1px solid #D5D9E1; }
+.seg button.on { background: var(--pink-s); color: var(--pink-d); }
+
+/* ---------- danh sách mã đề */
+.codes { display: grid; gap: 8px; }
+.code { display: flex; align-items: center; gap: 10px; border: 1px solid var(--line); border-radius: 12px; padding: 8px 8px 8px 12px; }
+.code > svg { width: 26px; height: 26px; flex: none; color: var(--pink); }
+.code b { font-size: 16px; font-variant-numeric: tabular-nums; min-width: 52px; }
+.code .grow { flex: 1; min-width: 0; color: var(--muted); font-size: 13px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 600; background: #EEF1F6; color: #374151; }
+.chip.ok { background: var(--ok-s); color: var(--ok); }
+.chip.bad { background: var(--bad-s); color: var(--bad); }
+.chip.warn { background: var(--warn-s); color: var(--warn); }
+.chip.info { background: var(--info-s); color: var(--info); }
+.chip.pink { background: var(--pink-s); color: var(--pink-d); }
+
+/* ---------- thông báo */
+.notice { border-radius: 12px; padding: 10px 12px; font-size: 13.5px; margin: 10px 0; display: flex; gap: 9px; align-items: flex-start; }
+.notice svg { width: 18px; height: 18px; flex: none; margin-top: 1px; }
+.notice ul { margin: 4px 0 0; padding-left: 18px; }
+.notice.ok { background: var(--ok-s); color: #1B5E20; }
+.notice.bad { background: var(--bad-s); color: #B71C1C; }
+.notice.warn { background: var(--warn-s); color: #7A4F01; }
+.notice.info { background: var(--info-s); color: #0D47A1; }
+
+/* ---------- chấm bài */
+.capture { display: grid; gap: 10px; }
+.tips { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+.tip { background: #F8F9FC; border: 1px solid var(--line); border-radius: 12px; padding: 9px 8px; font-size: 12px; color: #4B5563; text-align: center; }
+.tip svg { width: 22px; height: 22px; display: block; margin: 0 auto 4px; color: var(--navy); }
+.busy { display: flex; align-items: center; gap: 12px; }
+.spinner { width: 28px; height: 28px; border-radius: 50%; border: 3px solid var(--pink-s); border-top-color: var(--pink); animation: spin .8s linear infinite; flex: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.score { display: flex; align-items: center; gap: 14px; }
+.score .big { font-size: 44px; line-height: 1; font-weight: 800; color: var(--navy); font-variant-numeric: tabular-nums; letter-spacing: -1px; }
+.score .big small { font-size: 18px; color: var(--muted); font-weight: 600; letter-spacing: 0; }
+.score .meta { flex: 1; min-width: 0; }
+.kv { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+.sheet-img { margin-top: 12px; border-radius: 12px; border: 1px solid var(--line); overflow: auto; max-height: 75vh; background: #fff; -webkit-overflow-scrolling: touch; }
+.sheet-img img { display: block; width: 100%; height: auto; cursor: zoom-in; }
+.sheet-img.zoom img { width: 230%; max-width: none; cursor: zoom-out; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12.5px; color: #4B5563; margin-top: 8px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
+.legend i.ring { background: transparent; border: 2.5px solid #2E7D32; }
+.legend i.sq { border-radius: 3px; }
+.batch { display: grid; gap: 6px; margin-top: 10px; }
+.batch button { display: flex; align-items: center; gap: 10px; text-align: left; border: 1px solid var(--line); background: #fff; border-radius: 10px; padding: 8px 10px; cursor: pointer; }
+.batch button svg { width: 18px; height: 18px; flex: none; color: var(--muted); }
+.batch button .grow { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.batch button.sel { border-color: var(--pink); background: #FFF7FA; }
+
+/* ---------- kết quả */
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.stat { background: #F8F9FC; border: 1px solid var(--line); border-radius: 12px; padding: 10px; text-align: center; }
+.stat b { display: block; font-size: 22px; color: var(--navy); font-variant-numeric: tabular-nums; }
+.stat span { font-size: 12px; color: var(--muted); }
+table.list { width: 100%; border-collapse: collapse; font-size: 14px; }
+table.list th { text-align: left; font-size: 12px; color: var(--muted); font-weight: 600; padding: 6px 6px; border-bottom: 1px solid var(--line); }
+table.list td { padding: 10px 6px; border-bottom: 1px solid #EEF0F4; font-variant-numeric: tabular-nums; }
+table.list tr.click { cursor: pointer; }
+table.list tr.click:active td { background: #FFF7FA; }
+table.list td.num { text-align: right; font-weight: 700; }
+table.q { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-top: 8px; }
+table.q th, table.q td { padding: 6px 6px; border-bottom: 1px solid #EEF0F4; text-align: left; }
+table.q th { font-size: 12px; color: var(--muted); }
+.o-correct { color: var(--ok); font-weight: 700; }
+.o-incorrect, .o-blank { color: var(--bad); font-weight: 700; }
+.o-partial { color: #E65100; font-weight: 700; }
+.o-multiple, .o-invalid { color: var(--warn); font-weight: 700; }
+.empty { text-align: center; padding: 26px 10px; color: var(--muted); }
+.empty svg { width: 44px; height: 44px; color: #C3C8D2; display: block; margin: 0 auto 8px; }
+
+/* ---------- hộp thoại */
+.modal { position: fixed; inset: 0; z-index: 50; background: rgba(15, 23, 42, .45); display: flex; align-items: flex-end; justify-content: center; }
+.modal .box { background: #fff; width: 100%; max-width: 620px; max-height: 92vh; overflow: auto; border-radius: 18px 18px 0 0; padding: 16px 16px calc(18px + env(safe-area-inset-bottom)); }
+.modal .box h3 { margin: 0 0 6px; font-size: 17px; }
+.modal .grab { width: 40px; height: 4px; border-radius: 2px; background: #D5D9E1; margin: 0 auto 12px; }
+@media (min-width: 700px) { .modal { align-items: center; } .modal .box { border-radius: 18px; } }
+.toast { position: fixed; left: 50%; bottom: calc(84px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 60; background: var(--navy-2); color: #fff; padding: 10px 16px; border-radius: 12px; font-size: 14px; box-shadow: 0 6px 20px rgba(0, 0, 0, .2); max-width: 92vw; }
+details.more summary { cursor: pointer; color: var(--pink-d); font-weight: 600; font-size: 14px; padding: 6px 0; list-style: none; }
+details.more summary::-webkit-details-marker { display: none; }
+details.more summary::before { content: "＋ "; }
+details.more[open] summary::before { content: "－ "; }
+
+</style>
+</head>
+<body>
+<noscript>Trang cần bật JavaScript để chấm phiếu.</noscript>
+<script>
+(globalThis.Hamariff = globalThis.Hamariff || {}).DEFAULT_TEMPLATE_JSON = {"format":"hamariff-template","code":"HAMARIFF-STD","name":"Phiếu chuẩn Hamariff (A4)","version":1,"pageWidthMm":210,"pageHeightMm":297,"layout":{"anchors":[{"name":"Góc trên trái","rect":{"x":0.0380952380952381,"y":0.026936026936026935,"width":0.02857142857142857,"height":0.020202020202020204}},{"name":"Góc trên phải","rect":{"x":0.9333333333333333,"y":0.026936026936026935,"width":0.02857142857142857,"height":0.020202020202020204}},{"name":"Góc dưới trái","rect":{"x":0.0380952380952381,"y":0.9528619528619529,"width":0.02857142857142857,"height":0.020202020202020204}},{"name":"Góc dưới phải","rect":{"x":0.9333333333333333,"y":0.9528619528619529,"width":0.02857142857142857,"height":0.020202020202020204}},{"name":"Giữa trái","rect":{"x":0.0380952380952381,"y":0.49158249158249157,"width":0.02857142857142857,"height":0.020202020202020204}},{"name":"Giữa phải","rect":{"x":0.9333333333333333,"y":0.49158249158249157,"width":0.02857142857142857,"height":0.020202020202020204}},{"name":"Định hướng","rect":{"x":0.10476190476190476,"y":0.026936026936026935,"width":0.02857142857142857,"height":0.020202020202020204}}],"regions":[{"name":"Số báo danh","kind":"CandidateNumber","rect":{"x":0.5714285714285714,"y":0.14814814814814814,"width":0.17142857142857143,"height":0.16835016835016836},"rows":10,"columns":6,"columnGroupSize":0,"columnGroupGap":1,"rowGapAfter":[],"rowGapSize":0.5,"bubbleSizeRatio":0.7,"partNumber":0,"firstQuestion":1,"optionLabels":["0","1","2","3","4","5","6","7","8","9"],"symbolRules":[]},{"name":"Mã đề","kind":"ExamCode","rect":{"x":0.7904761904761904,"y":0.14814814814814814,"width":0.11428571428571428,"height":0.16835016835016836},"rows":10,"columns":4,"columnGroupSize":0,"columnGroupGap":1,"rowGapAfter":[],"rowGapSize":0.5,"bubbleSizeRatio":0.7,"partNumber":0,"firstQuestion":1,"optionLabels":["0","1","2","3","4","5","6","7","8","9"],"symbolRules":[]},{"name":"Phần I","kind":"SingleChoice","rect":{"x":0.12380952380952381,"y":0.3501683501683502,"width":0.780952380952381,"height":0.16835016835016836},"rows":10,"columns":16,"columnGroupSize":4,"columnGroupGap":1.5,"rowGapAfter":[],"rowGapSize":0.5,"bubbleSizeRatio":0.7,"partNumber":1,"firstQuestion":1,"optionLabels":["A","B","C","D"],"symbolRules":[]},{"name":"Phần II","kind":"TrueFalse","rect":{"x":0.1523809523809524,"y":0.5791245791245792,"width":0.7571428571428571,"height":0.08080808080808081},"rows":4,"columns":16,"columnGroupSize":2,"columnGroupGap":1.5,"rowGapAfter":[],"rowGapSize":0.5,"bubbleSizeRatio":0.7,"partNumber":2,"firstQuestion":1,"optionLabels":["Đ","S"],"symbolRules":[]},{"name":"Phần III","kind":"ShortAnswer","rect":{"x":0.12380952380952381,"y":0.7205387205387206,"width":0.78,"height":0.20875420875420875},"rows":12,"columns":24,"columnGroupSize":4,"columnGroupGap":1.5,"rowGapAfter":[1],"rowGapSize":0.5,"bubbleSizeRatio":0.7,"partNumber":3,"firstQuestion":1,"optionLabels":["-",",","0","1","2","3","4","5","6","7","8","9"],"symbolRules":[{"symbol":"-","columns":[0]},{"symbol":",","columns":[1,2]}]}]}};
+;
+/*
+ * Hamariff – chấm điểm theo quy chế THPT 2025+ (cổng từ GradingEngine của bản Windows).
+ * Phần I: mỗi câu đúng 0,25đ. Phần II: thang 0,1 / 0,25 / 0,5 / 1 theo số ý đúng.
+ * Phần III: đúng nguyên văn (sau chuẩn hóa) – Toán 0,5đ/câu, môn khác 0,25đ/câu.
+ */
+(function () {
+  'use strict';
+  const H = globalThis.Hamariff || (globalThis.Hamariff = {});
+  const BLANK = '_', MULTI = '*', UNCLEAR = '?', TRUE = 'Đ', FALSE = 'S';
+  const DEFAULT_TF_TABLE = [0, 0.1, 0.25, 0.5, 1];
+
+  function normalizeTFChar(c) {
+    if (c == null) return null;
+    switch (String(c).toUpperCase()) {
+      case 'Đ': case 'D': case 'T': case '1': return TRUE;
+      case 'S': case 'F': case '0': return FALSE;
+      default: return null;
+    }
+  }
+
+  function normalizeChoiceKey(v, labels) {
+    if (v == null) return null;
+    const s = String(v).trim().toUpperCase();
+    if (!s) return null;
+    return (labels || ['A', 'B', 'C', 'D']).some(l => l.toUpperCase() === s) ? s : null;
+  }
+
+  function normalizeTFKey(v, n) {
+    n = n || 4;
+    if (v == null) return null;
+    const compact = [...String(v)].filter(c => !/\s/.test(c) && c !== ',' && c !== ';' && c !== '-');
+    if (compact.length !== n) return null;
+    const out = [];
+    for (const c of compact) { const t = normalizeTFChar(c); if (!t) return null; out.push(t); }
+    return out.join('');
+  }
+
+  function normalizeTFResponse(v, n) {
+    n = n || 4;
+    const out = [];
+    for (let i = 0; i < n; i++) {
+      const c = v != null && i < v.length ? v[i] : BLANK;
+      out.push(c === MULTI ? MULTI : c === UNCLEAR ? UNCLEAR : (c === ' ' || c === BLANK) ? BLANK : (normalizeTFChar(c) || UNCLEAR));
+    }
+    return out.join('');
+  }
+
+  // ------------------------------------------------------------------ Trả lời ngắn
+
+  function validateShort(text, rule) {
+    const bad = e => ({ status: 'invalid', canonical: text, error: e });
+    if (text.includes(BLANK) || text.includes(' ')) return bad('Có cột trống xen giữa câu trả lời.');
+    if (text.length > rule.maxLength) return bad(`Câu trả lời vượt quá ${rule.maxLength} ký tự.`);
+    if (/[^0-9,\-]/.test(text)) return bad('Câu trả lời chứa ký tự không hợp lệ.');
+    const minus = (text.match(/-/g) || []).length;
+    if (minus > 1 || (minus === 1 && text[0] !== '-')) return bad('Dấu âm chỉ được đặt ở vị trí đầu tiên.');
+    if (minus === 1 && rule.allowNegative === false) return bad('Câu hỏi không cho phép đáp án âm.');
+    const comma = (text.match(/,/g) || []).length;
+    if (comma > 1) return bad('Chỉ được có một dấu phẩy thập phân.');
+    if (comma === 1 && rule.allowDecimal === false) return bad('Câu hỏi không cho phép đáp án thập phân.');
+    if (!/\d/.test(text)) return bad('Câu trả lời không có chữ số.');
+    if (text.endsWith(',')) return bad('Dấu phẩy không được đứng cuối.');
+    return { status: 'ok', canonical: text, error: null };
+  }
+
+  function parseShortAnswer(raw, rule) {
+    rule = Object.assign({ maxLength: 4, allowNegative: true, allowDecimal: true }, rule || {});
+    if (raw == null || !String(raw).trim()) return { status: 'blank', canonical: '' };
+    let text = String(raw).replace(/\./g, ',').trim().replace(/^[_ ]+|[_ ]+$/g, '');
+    if (!text) return { status: 'blank', canonical: '' };
+    if (text.includes(MULTI)) return { status: 'multiple', canonical: text, error: 'Có cột tô nhiều ô.' };
+    if (text.includes(UNCLEAR)) return { status: 'unclear', canonical: text, error: 'Có cột không rõ ràng.' };
+    return validateShort(text, rule);
+  }
+
+  function normalizeShortKey(raw, rule) {
+    rule = Object.assign({ maxLength: 4, allowNegative: true, allowDecimal: true }, rule || {});
+    if (raw == null || !String(raw).trim()) return { value: null, error: 'Đáp án trả lời ngắn đang để trống.' };
+    const r = validateShort(String(raw).trim().replace(/\./g, ',').replace(/ /g, ''), rule);
+    return r.status === 'ok' ? { value: r.canonical, error: null } : { value: null, error: r.error };
+  }
+
+  /** Số Excel → chuỗi trả lời ngắn (dấu phẩy thập phân, không mũ). */
+  function shortFromNumber(n) {
+    let s = String(n);
+    if (/e/i.test(s)) s = Number(n).toFixed(10).replace(/0+$/, '').replace(/\.$/, '');
+    return s.replace('.', ',');
+  }
+
+  function parseTFTable(text, n) {
+    n = n || 4;
+    if (text == null || !String(text).trim()) return null;
+    const t = String(text);
+    const parts = (/[;|]/.test(t) ? t.split(/[;|]/) : t.split(/[ \t]+/)).map(s => s.trim()).filter(Boolean);
+    const vals = [];
+    for (const p of parts) {
+      if (!/^\d*([.,]\d+)?$/.test(p) || !/\d/.test(p)) return null;
+      vals.push(Number(p.replace(',', '.')));
+    }
+    if (vals.length === n) vals.unshift(0);
+    if (vals.length !== n + 1) return null;
+    for (let i = 1; i < vals.length; i++) if (vals[i] < vals[i - 1]) return null;
+    return vals;
+  }
+
+  // ------------------------------------------------------------------ Chấm một phiếu
+
+  const round4 = v => Math.round(v * 10000) / 10000;
+  /** Làm tròn "xa số 0" như bản Windows (MidpointRounding.AwayFromZero). */
+  function roundAway(v, decimals) {
+    const f = Math.pow(10, decimals);
+    return Math.sign(v) * Math.round(Math.abs(v) * f + 1e-9) / f;
+  }
+
+  /**
+   * @param {Array} questions câu trả lời đọc được [{part,q,value}]
+   * @param {{code:string, items:Array<{part,q,type,answer,score?,tfTable?}>}} key
+   * @param {{part1Score?:number, part3Score?:number, tfTable?:number[], shortMaxLength?:number}} settings
+   */
+  function grade(questions, key, settings) {
+    settings = Object.assign({ part1Score: 0.25, part3Score: 0.25, tfTable: DEFAULT_TF_TABLE, shortMaxLength: 4 }, settings || {});
+    const resp = new Map(questions.map(q => [q.part * 10000 + q.q, q.value]));
+    const details = [];
+    const items = key.items.slice().sort((a, b) => a.part - b.part || a.q - b.q);
+    for (const it of items) {
+      const value = resp.get(it.part * 10000 + it.q);
+      if (it.type === 'choice') details.push(gradeChoice(it, value, settings));
+      else if (it.type === 'tf') details.push(gradeTF(it, value, settings));
+      else details.push(gradeShort(it, value, settings));
+    }
+    const raw = round4(details.reduce((s, d) => s + d.score, 0));
+    const max = round4(details.reduce((s, d) => s + d.max, 0));
+    const score10 = max > 0 ? (max === 10 ? roundAway(raw, 2) : roundAway(raw * 10 / max, 2)) : 0;
+    const count = o => details.filter(d => d.outcome === o).length;
+    return {
+      code: key.code, raw, max, score10, details,
+      correct: count('correct'), partial: count('partial'), incorrect: count('incorrect'), blank: count('blank'),
+      problems: count('multiple') + count('invalid')
+    };
+  }
+
+  function gradeChoice(it, value, s) {
+    const max = it.score != null ? it.score : s.part1Score;
+    const correct = String(it.answer || '').trim().toUpperCase();
+    const student = String(value || '').trim().replace(/^_+|_+$/g, '').toUpperCase();
+    let outcome;
+    if (!student.length) outcome = 'blank';
+    else if (student === MULTI || (student.length > 1 && /^\p{L}+$/u.test(student))) outcome = 'multiple';
+    else if (student.length === 1 && /\p{L}/u.test(student)) outcome = student === correct ? 'correct' : 'incorrect';
+    else outcome = 'invalid';
+    if (!correct) outcome = 'nokey';
+    return { part: it.part, q: it.q, type: 'choice', student, correct, outcome, correctCount: null, score: outcome === 'correct' ? max : 0, max };
+  }
+
+  function gradeTF(it, value, s) {
+    const n = Math.max(String(it.answer || '').length, 1);
+    const correct = normalizeTFKey(it.answer, n);
+    let table = it.tfTable || s.tfTable;
+    if (!table || table.length !== n + 1) table = n === 4 ? DEFAULT_TF_TABLE : new Array(n + 1).fill(0).map((_, i) => (i === n ? 1 : 0));
+    const max = table[n];
+    const student = normalizeTFResponse(value, n);
+    if (!correct) return { part: it.part, q: it.q, type: 'tf', student, correct: it.answer, outcome: 'nokey', correctCount: 0, score: 0, max };
+    let cc = 0;
+    for (let i = 0; i < n; i++) if ((student[i] === TRUE || student[i] === FALSE) && student[i] === correct[i]) cc++;
+    let outcome;
+    if ([...student].every(c => c === BLANK)) outcome = 'blank';
+    else if (cc === n) outcome = 'correct';
+    else if (cc > 0) outcome = 'partial';
+    else if ([...student].every(c => c === MULTI || c === BLANK)) outcome = 'multiple';
+    else if ([...student].every(c => c === UNCLEAR || c === BLANK)) outcome = 'invalid';
+    else outcome = 'incorrect';
+    return { part: it.part, q: it.q, type: 'tf', student, correct, outcome, correctCount: cc, score: table[cc], max };
+  }
+
+  function gradeShort(it, value, s) {
+    const rule = { maxLength: Math.max(4, s.shortMaxLength || 4) };
+    const max = it.score != null ? it.score : s.part3Score;
+    const key = normalizeShortKey(it.answer, rule);
+    const parsed = parseShortAnswer(value, rule);
+    if (!key.value) return { part: it.part, q: it.q, type: 'short', student: parsed.canonical, correct: it.answer, outcome: 'nokey', correctCount: null, score: 0, max };
+    const outcome = parsed.status === 'blank' ? 'blank' : parsed.status === 'multiple' ? 'multiple'
+      : (parsed.status === 'unclear' || parsed.status === 'invalid') ? 'invalid'
+        : parsed.canonical === key.value ? 'correct' : 'incorrect';
+    return { part: it.part, q: it.q, type: 'short', student: parsed.canonical, correct: key.value, outcome, correctCount: null, score: outcome === 'correct' ? max : 0, max };
+  }
+
+  // ------------------------------------------------------------------ Gõ nhanh đáp án
+
+  /**
+   * Đọc đáp án gõ tay của một mã đề.
+   * Phần I: chuỗi chữ cái "ABCDA..." (cho phép dấu cách); Phần II: mỗi câu 4 ký tự Đ/S, cách nhau bởi dấu cách;
+   * Phần III: các giá trị cách nhau bởi dấu cách hoặc dấu chấm phẩy (dấu phẩy là dấu thập phân).
+   */
+  function parseTypedKey(code, p1, p2, p3) {
+    const errors = [], items = [];
+    const c = String(code || '').trim();
+    if (!/^\d{1,10}$/.test(c)) errors.push('Mã đề phải là dãy số (vd 0101).');
+    const letters = String(p1 || '').toUpperCase().replace(/[\s,;.\-|\d]+/g, '');
+    [...letters].forEach((ch, i) => {
+      if (!'ABCD'.includes(ch)) errors.push(`Phần I câu ${i + 1}: "${ch}" không phải A, B, C, D.`);
+      else items.push({ part: 1, q: i + 1, type: 'choice', answer: ch });
+    });
+    String(p2 || '').split(/[\s;|]+/).filter(Boolean).forEach((tok, i) => {
+      const k = normalizeTFKey(tok, 4);
+      if (!k) errors.push(`Phần II câu ${i + 1}: "${tok}" phải gồm 4 ký tự Đ/S (vd ĐĐSS).`);
+      else items.push({ part: 2, q: i + 1, type: 'tf', answer: k });
+    });
+    String(p3 || '').split(/[\s;|]+/).filter(Boolean).forEach((tok, i) => {
+      const k = normalizeShortKey(tok, { maxLength: 4 });
+      if (!k.value) errors.push(`Phần III câu ${i + 1}: "${tok}" – ${k.error}`);
+      else items.push({ part: 3, q: i + 1, type: 'short', answer: k.value });
+    });
+    if (!items.length && !errors.length) errors.push('Chưa nhập đáp án nào.');
+    return { key: { code: c, items }, errors };
+  }
+
+  /** Chuỗi gõ nhanh tương ứng một mã đề đã có (để sửa). */
+  function keyToTyped(key) {
+    const p = n => key.items.filter(i => i.part === n).sort((a, b) => a.q - b.q).map(i => i.answer);
+    return { p1: p(1).join(''), p2: p(2).join(' '), p3: p(3).join('  ') };
+  }
+
+  function keySummary(key) {
+    const n = part => key.items.filter(i => i.part === part).length;
+    return `${n(1)}/${n(2)}/${n(3)} câu`;
+  }
+
+  /** So khớp mã đề đọc trên phiếu với mã đề trong đáp án (bỏ qua số 0 ở đầu nếu Excel lưu thành số). */
+  function matchExamCode(read, codes) {
+    if (!read) return null;
+    if (codes.includes(read)) return read;
+    const strip = s => String(s).replace(/^0+(?=\d)/, '');
+    return codes.find(c => strip(c) === strip(read)) || null;
+  }
+
+  H.grading = {
+    BLANK, MULTI, UNCLEAR, TRUE, FALSE, DEFAULT_TF_TABLE,
+    normalizeTFChar, normalizeChoiceKey, normalizeTFKey, normalizeTFResponse,
+    parseShortAnswer, normalizeShortKey, shortFromNumber, parseTFTable,
+    grade, roundAway, parseTypedKey, keyToTyped, keySummary, matchExamCode
+  };
+  if (typeof module !== 'undefined' && module.exports) module.exports = H;
+})();
+
+;
+/*
+ * Hamariff OMR (bản web) – lõi nhận diện phiếu trả lời chạy hoàn toàn trong trình duyệt.
+ * Cổng từ bản Windows (OpenCV): dò dấu định vị → nắn phối cảnh (tự xoay 0/90/180/270°) → tinh chỉnh theo dấu
+ * → làm phẳng độ sáng → đo độ tô từng ô tròn → quyết định đáp án với ngưỡng thích nghi theo từng phiếu.
+ * Không dùng thư viện ngoài; chạy được cả trong Node (kiểm thử) và trình duyệt.
+ */
+(function () {
+  'use strict';
+  const H = globalThis.Hamariff || (globalThis.Hamariff = {});
+
+  const BLANK = '_', MULTI = '*', UNCLEAR = '?';
+  const DIGITS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+  const CHOICE = ['A', 'B', 'C', 'D'];
+  const TF = ['Đ', 'S'];
+  const SHORT = ['-', ','].concat(DIGITS);
+  const KIND_BY_NUMBER = { 1: 'CandidateNumber', 2: 'ExamCode', 3: 'SingleChoice', 4: 'TrueFalse', 5: 'ShortAnswer' };
+  const ISSUE = { None: 'none', Blank: 'blank', Multiple: 'multiple', Low: 'low', Invalid: 'invalid' };
+
+  const OPTIONS = {
+    dpi: 150, filled: 0.45, blank: 0.20, minSeparation: 0.20, minConfidence: 0.60, adaptive: true,
+    minSharpness: 20, minImageSide: 500, maxAlignmentErrorPx: 8
+  };
+
+  // ======================================================================= Mẫu phiếu (.hmtpl)
+
+  function num(v, d) { const n = Number(v); return Number.isFinite(n) ? n : d; }
+  function rectOf(r) {
+    r = r || {};
+    return { x: num(r.x ?? r.X, 0), y: num(r.y ?? r.Y, 0), width: num(r.width ?? r.Width, 0), height: num(r.height ?? r.Height, 0) };
+  }
+  function kindOf(k) {
+    if (typeof k === 'number') return KIND_BY_NUMBER[k] || null;
+    const s = String(k || '');
+    return Object.values(KIND_BY_NUMBER).find(n => n.toLowerCase() === s.toLowerCase()) || null;
+  }
+
+  /** Đọc tệp .hmtpl (JSON của bản Windows) thành mẫu phiếu gọn (bỏ ảnh nền). */
+  function parseTemplate(input) {
+    let d = input;
+    if (typeof d === 'string') {
+      try { d = JSON.parse(d.replace(/^﻿/, '')); } catch (e) { throw new Error('Tệp mẫu phiếu không đọc được (không phải JSON .hmtpl).'); }
+    }
+    if (!d || typeof d !== 'object') throw new Error('Tệp mẫu phiếu không hợp lệ.');
+    const L = d.layout || d.Layout;
+    if (!L) throw new Error('Tệp không phải mẫu phiếu Hamariff (.hmtpl): thiếu bố cục phiếu.');
+    const anchors = (L.anchors || L.Anchors || []).map(a => ({ name: String(a.name ?? a.Name ?? ''), rect: rectOf(a.rect ?? a.Rect) }))
+      .filter(a => a.rect.width > 0 && a.rect.height > 0);
+    const regions = (L.regions || L.Regions || []).map(r => ({
+      name: String(r.name ?? r.Name ?? ''),
+      kind: kindOf(r.kind ?? r.Kind),
+      rect: rectOf(r.rect ?? r.Rect),
+      rows: num(r.rows ?? r.Rows, 0) | 0,
+      columns: num(r.columns ?? r.Columns, 0) | 0,
+      columnGroupSize: num(r.columnGroupSize ?? r.ColumnGroupSize, 0) | 0,
+      columnGroupGap: num(r.columnGroupGap ?? r.ColumnGroupGap, 0),
+      rowGapAfter: (r.rowGapAfter ?? r.RowGapAfter ?? []).map(Number).filter(Number.isFinite),
+      rowGapSize: num(r.rowGapSize ?? r.RowGapSize, 0),
+      bubbleSizeRatio: num(r.bubbleSizeRatio ?? r.BubbleSizeRatio, 0.7) || 0.7,
+      partNumber: num(r.partNumber ?? r.PartNumber, 0) | 0,
+      firstQuestion: num(r.firstQuestion ?? r.FirstQuestion, 1) | 0,
+      optionLabels: (r.optionLabels ?? r.OptionLabels ?? []).map(String),
+      symbolRules: (r.symbolRules ?? r.SymbolRules ?? []).map(s => ({ symbol: String(s.symbol ?? s.Symbol), columns: (s.columns ?? s.Columns ?? []).map(Number) }))
+    })).filter(r => r.kind && r.rows > 0 && r.columns > 0 && r.rect.width > 0 && r.rect.height > 0);
+
+    const tpl = {
+      format: 'hamariff-template',
+      code: String(d.code ?? d.Code ?? ''),
+      name: String(d.name ?? d.Name ?? 'Mẫu phiếu'),
+      version: num(d.version ?? d.Version, 1),
+      pageWidthMm: num(d.pageWidthMm ?? d.PageWidthMm, 210) || 210,
+      pageHeightMm: num(d.pageHeightMm ?? d.PageHeightMm, 297) || 297,
+      anchors, regions
+    };
+    const problems = checkTemplate(tpl);
+    if (problems.length) throw new Error(problems.join(' '));
+    return tpl;
+  }
+
+  function checkTemplate(tpl) {
+    const p = [];
+    if (tpl.anchors.length < 4) p.push(`Mẫu phiếu cần ít nhất 4 dấu định vị (đang có ${tpl.anchors.length}).`);
+    if (!tpl.regions.some(r => r.kind === 'SingleChoice' || r.kind === 'TrueFalse' || r.kind === 'ShortAnswer'))
+      p.push('Mẫu phiếu chưa có vùng câu hỏi nào.');
+    return p;
+  }
+
+  /** Tóm tắt mẫu phiếu để hiển thị. */
+  function describeTemplate(tpl) {
+    const parts = [];
+    for (const r of tpl.regions) {
+      if (r.kind === 'SingleChoice') parts.push(`Phần I: ${questionCount(r)} câu`);
+      else if (r.kind === 'TrueFalse') parts.push(`Phần II: ${questionCount(r)} câu`);
+      else if (r.kind === 'ShortAnswer') parts.push(`Phần III: ${questionCount(r)} câu`);
+    }
+    const sbd = tpl.regions.find(r => r.kind === 'CandidateNumber');
+    const code = tpl.regions.find(r => r.kind === 'ExamCode');
+    if (sbd) parts.push(`SBD ${sbd.columns} số`);
+    if (code) parts.push(`mã đề ${code.columns} số`);
+    return parts.join(' · ');
+  }
+
+  // ======================================================================= Hình học lưới (RegionGeometry)
+
+  function groupSize(r) { return r.columnGroupSize > 0 ? Math.min(r.columnGroupSize, Math.max(r.columns, 1)) : Math.max(r.columns, 1); }
+  function groupCount(r) { return r.columns <= 0 ? 0 : Math.ceil(r.columns / groupSize(r)); }
+  function columnUnits(r) { return r.columns + Math.max(groupCount(r) - 1, 0) * Math.max(r.columnGroupGap, 0); }
+  function rowUnits(r) { return r.rows + r.rowGapAfter.filter(i => i >= 0 && i < r.rows - 1).length * Math.max(r.rowGapSize, 0); }
+  function cellWidth(r) { return r.columns <= 0 ? 0 : r.rect.width / columnUnits(r); }
+  function cellHeight(r) { return r.rows <= 0 ? 0 : r.rect.height / rowUnits(r); }
+  function cellCenter(r, row, col) {
+    const gs = groupSize(r), g = Math.floor(col / gs);
+    const cu = col + g * Math.max(r.columnGroupGap, 0);
+    const ru = row + r.rowGapAfter.filter(i => i >= 0 && i < row).length * Math.max(r.rowGapSize, 0);
+    return [r.rect.x + (cu + 0.5) * cellWidth(r), r.rect.y + (ru + 0.5) * cellHeight(r)];
+  }
+  function questionCount(r) {
+    if (r.kind === 'SingleChoice') return groupCount(r) * r.rows;
+    if (r.kind === 'TrueFalse' || r.kind === 'ShortAnswer') return groupCount(r);
+    return 0;
+  }
+  function labels(r, defaults, count) {
+    const src = r.optionLabels.length >= count ? r.optionLabels : defaults;
+    const out = [];
+    for (let i = 0; i < count; i++) out.push(i < src.length ? src[i] : String(i + 1));
+    return out;
+  }
+
+  /** Nhóm ô loại trừ của một vùng: digit (SBD/mã đề), choice (Phần I), tf (một ý Phần II), short (một cột Phần III). */
+  function getGroups(r) {
+    const groups = [];
+    if (r.rows <= 0 || r.columns <= 0) return groups;
+    const gs = groupSize(r), gc = groupCount(r);
+    if (r.kind === 'CandidateNumber' || r.kind === 'ExamCode') {
+      const lb = labels(r, DIGITS, r.rows);
+      for (let col = 0; col < r.columns; col++) {
+        const cells = [];
+        for (let row = 0; row < r.rows; row++) cells.push({ row, col, label: lb[row] });
+        groups.push({ kind: 'digit', part: 0, q: 0, pos: col, cells });
+      }
+    } else if (r.kind === 'SingleChoice') {
+      const lb = labels(r, CHOICE, gs);
+      for (let g = 0; g < gc; g++)
+        for (let row = 0; row < r.rows; row++) {
+          const cells = [];
+          for (let i = 0; i < gs && g * gs + i < r.columns; i++) cells.push({ row, col: g * gs + i, label: lb[i] });
+          groups.push({ kind: 'choice', part: r.partNumber, q: r.firstQuestion + g * r.rows + row, pos: 0, cells });
+        }
+    } else if (r.kind === 'TrueFalse') {
+      const lb = labels(r, TF, gs);
+      for (let g = 0; g < gc; g++)
+        for (let row = 0; row < r.rows; row++) {
+          const cells = [];
+          for (let i = 0; i < gs && g * gs + i < r.columns; i++) cells.push({ row, col: g * gs + i, label: lb[i] });
+          groups.push({ kind: 'tf', part: r.partNumber, q: r.firstQuestion + g, pos: row, cells });
+        }
+    } else if (r.kind === 'ShortAnswer') {
+      const lb = labels(r, SHORT, r.rows);
+      for (let g = 0; g < gc; g++)
+        for (let j = 0; j < gs && g * gs + j < r.columns; j++) {
+          const col = g * gs + j, cells = [];
+          for (let row = 0; row < r.rows; row++) {
+            const symbol = lb[row];
+            const rule = r.symbolRules.find(s => s.symbol === symbol);
+            if (!rule || rule.columns.includes(j)) cells.push({ row, col, label: symbol });
+          }
+          groups.push({ kind: 'short', part: r.partNumber, q: r.firstQuestion + g, pos: j, cells });
+        }
+    }
+    return groups;
+  }
+
+  function canvasSize(tpl, dpi) {
+    dpi = dpi || OPTIONS.dpi;
+    return [Math.round(tpl.pageWidthMm / 25.4 * dpi), Math.round(tpl.pageHeightMm / 25.4 * dpi)];
+  }
+
+  /** Tọa độ pixel của từng ô tròn và dấu định vị trên canvas chuẩn W×H. */
+  function buildMap(tpl, W, Hh) {
+    const regions = [];
+    for (const r of tpl.regions) {
+      const cw = cellWidth(r) * W, ch = cellHeight(r) * Hh;
+      const radius = Math.max(1.5, r.bubbleSizeRatio * Math.min(cw, ch) / 2);
+      const groups = getGroups(r).map(g => ({
+        kind: g.kind, part: g.part, q: g.q, pos: g.pos,
+        cells: g.cells.map(c => { const [x, y] = cellCenter(r, c.row, c.col); return { row: c.row, col: c.col, label: c.label, x: x * W, y: y * Hh, r: radius }; })
+      }));
+      regions.push({ region: r, groups });
+    }
+    const anchors = tpl.anchors.map(a => ({ name: a.name, x: a.rect.x * W, y: a.rect.y * Hh, w: a.rect.width * W, h: a.rect.height * Hh }));
+    return { W, H: Hh, regions, anchors };
+  }
+
+  // ======================================================================= Xử lý ảnh cơ bản
+
+  function clamp(v, lo, hi) { return v < lo ? lo : v > hi ? hi : v; }
+
+  function rgbaToGray(rgba, w, h) {
+    const g = new Uint8Array(w * h);
+    for (let i = 0, j = 0; i < g.length; i++, j += 4) g[i] = (rgba[j] * 0.299 + rgba[j + 1] * 0.587 + rgba[j + 2] * 0.114 + 0.5) | 0;
+    return g;
+  }
+
+  /** Thu nhỏ ảnh RGBA theo trung bình vùng (dùng khi không có canvas, vd kiểm thử Node). */
+  function downscaleRGBA(rgba, w, h, maxSide) {
+    const s = maxSide / Math.max(w, h);
+    if (s >= 1) return { rgba, w, h, scale: 1 };
+    const nw = Math.max(1, Math.round(w * s)), nh = Math.max(1, Math.round(h * s));
+    const out = new Uint8ClampedArray(nw * nh * 4);
+    const xs = new Int32Array(nw + 1), ys = new Int32Array(nh + 1);
+    for (let x = 0; x <= nw; x++) xs[x] = Math.min(w, Math.round(x * w / nw));
+    for (let y = 0; y <= nh; y++) ys[y] = Math.min(h, Math.round(y * h / nh));
+    const acc = new Float64Array(nw * 4);
+    for (let ty = 0; ty < nh; ty++) {
+      acc.fill(0);
+      const y0 = ys[ty], y1 = Math.max(y0 + 1, ys[ty + 1]);
+      for (let y = y0; y < y1 && y < h; y++) {
+        const row = y * w * 4;
+        for (let tx = 0; tx < nw; tx++) {
+          const x0 = xs[tx], x1 = Math.max(x0 + 1, xs[tx + 1]);
+          let r = 0, g = 0, b = 0, a = 0;
+          for (let x = x0; x < x1 && x < w; x++) { const k = row + x * 4; r += rgba[k]; g += rgba[k + 1]; b += rgba[k + 2]; a += rgba[k + 3]; }
+          acc[tx * 4] += r; acc[tx * 4 + 1] += g; acc[tx * 4 + 2] += b; acc[tx * 4 + 3] += a;
+        }
+      }
+      for (let tx = 0; tx < nw; tx++) {
+        const n = (Math.max(xs[tx] + 1, xs[tx + 1]) - xs[tx]) * (y1 - y0);
+        const o = (ty * nw + tx) * 4;
+        out[o] = acc[tx * 4] / n; out[o + 1] = acc[tx * 4 + 1] / n; out[o + 2] = acc[tx * 4 + 2] / n; out[o + 3] = acc[tx * 4 + 3] / n;
+      }
+    }
+    return { rgba: out, w: nw, h: nh, scale: nw / w };
+  }
+
+  function blur5(src, w, h) {
+    const tmp = new Uint16Array(w * h), out = new Uint8Array(w * h);
+    for (let y = 0; y < h; y++) {
+      const row = y * w;
+      for (let x = 0; x < w; x++) {
+        const a = src[row + (x > 1 ? x - 2 : 0)], b = src[row + (x > 0 ? x - 1 : 0)], c = src[row + x];
+        const d = src[row + (x < w - 1 ? x + 1 : w - 1)], e = src[row + (x < w - 2 ? x + 2 : w - 1)];
+        tmp[row + x] = a + 4 * b + 6 * c + 4 * d + e;
+      }
+    }
+    for (let y = 0; y < h; y++) {
+      const ra = (y > 1 ? y - 2 : 0) * w, rb = (y > 0 ? y - 1 : 0) * w, rc = y * w;
+      const rd = (y < h - 1 ? y + 1 : h - 1) * w, re = (y < h - 2 ? y + 2 : h - 1) * w;
+      for (let x = 0; x < w; x++)
+        out[rc + x] = (tmp[ra + x] + 4 * tmp[rb + x] + 6 * tmp[rc + x] + 4 * tmp[rd + x] + tmp[re + x] + 128) >> 8;
+    }
+    return out;
+  }
+
+  function integral(src, w, h) {
+    const W1 = w + 1, I = new Float64Array(W1 * (h + 1));
+    for (let y = 0; y < h; y++) {
+      let rs = 0;
+      const o = (y + 1) * W1, p = y * W1, row = y * w;
+      for (let x = 0; x < w; x++) { rs += src[row + x]; I[o + x + 1] = I[p + x + 1] + rs; }
+    }
+    return I;
+  }
+
+  /** Ngưỡng thích nghi (trung bình khối − C), đảo: 1 = điểm tối. */
+  function adaptiveThresholdInv(src, w, h, block, C) {
+    const I = integral(src, w, h), W1 = w + 1, half = block >> 1, out = new Uint8Array(w * h);
+    for (let y = 0; y < h; y++) {
+      const y0 = Math.max(0, y - half), y1 = Math.min(h, y + half + 1);
+      const r0 = y0 * W1, r1 = y1 * W1;
+      for (let x = 0; x < w; x++) {
+        const x0 = Math.max(0, x - half), x1 = Math.min(w, x + half + 1);
+        const s = I[r1 + x1] - I[r0 + x1] - I[r1 + x0] + I[r0 + x0];
+        const n = (x1 - x0) * (y1 - y0);
+        out[y * w + x] = src[y * w + x] * n <= s - C * n ? 1 : 0;
+      }
+    }
+    return out;
+  }
+
+  /** Phép mở hình thái (co rồi giãn) với nhân vuông k×k trên ảnh nhị phân 0/1. */
+  function openSquare(bin, w, h, k) {
+    const half = k >> 1, W1 = w + 1;
+    const window = (I, test) => {
+      const out = new Uint8Array(w * h);
+      for (let y = 0; y < h; y++) {
+        const y0 = Math.max(0, y - half), y1 = Math.min(h, y + half + 1), r0 = y0 * W1, r1 = y1 * W1;
+        for (let x = 0; x < w; x++) {
+          const x0 = Math.max(0, x - half), x1 = Math.min(w, x + half + 1);
+          const s = I[r1 + x1] - I[r0 + x1] - I[r1 + x0] + I[r0 + x0];
+          out[y * w + x] = test(s, (x1 - x0) * (y1 - y0)) ? 1 : 0;
+        }
+      }
+      return out;
+    };
+    const eroded = window(integral(bin, w, h), (s, n) => s === n);
+    return window(integral(eroded, w, h), s => s > 0);
+  }
+
+  /** Gán nhãn thành phần liên thông (8 hướng) + thống kê. */
+  function labelComponents(bin, w, h) {
+    const labels = new Int32Array(w * h);
+    let parent = new Int32Array(4096), n = 1;
+    const find = x => { while (parent[x] !== x) { parent[x] = parent[parent[x]]; x = parent[x]; } return x; };
+    const unite = (a, b) => { a = find(a); b = find(b); if (a === b) return a; if (a < b) { parent[b] = a; return a; } parent[a] = b; return b; };
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const i = y * w + x;
+        if (!bin[i]) continue;
+        let l = x > 0 ? labels[i - 1] : 0;
+        if (y > 0) {
+          const up = i - w;
+          if (x > 0 && labels[up - 1]) l = l ? unite(l, labels[up - 1]) : labels[up - 1];
+          if (labels[up]) l = l ? unite(l, labels[up]) : labels[up];
+          if (x < w - 1 && labels[up + 1]) l = l ? unite(l, labels[up + 1]) : labels[up + 1];
+        }
+        if (!l) {
+          if (n >= parent.length) { const p = new Int32Array(parent.length * 2); p.set(parent); parent = p; }
+          parent[n] = n; l = n++;
+        }
+        labels[i] = l;
+      }
+    }
+    const id = new Int32Array(n);
+    let count = 0;
+    for (let i = 1; i < n; i++) { const r = find(i); if (r === i) id[i] = ++count; }
+    for (let i = 1; i < n; i++) id[i] = id[find(i)];
+    const area = new Float64Array(count + 1), sx = new Float64Array(count + 1), sy = new Float64Array(count + 1);
+    const minx = new Int32Array(count + 1).fill(w), miny = new Int32Array(count + 1).fill(h), maxx = new Int32Array(count + 1).fill(-1), maxy = new Int32Array(count + 1).fill(-1);
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const i = y * w + x;
+        if (!labels[i]) continue;
+        const c = id[labels[i]];
+        labels[i] = c;
+        area[c]++; sx[c] += x; sy[c] += y;
+        if (x < minx[c]) minx[c] = x; if (x > maxx[c]) maxx[c] = x;
+        if (y < miny[c]) miny[c] = y; if (y > maxy[c]) maxy[c] = y;
+      }
+    }
+    return { labels, count, area, sx, sy, minx, miny, maxx, maxy };
+  }
+
+  /** Hình chữ nhật xoay nhỏ nhất bao các điểm ảnh của thành phần c (dò góc 0..88°, bước 2°). */
+  function minAreaRect(cc, w, c) {
+    const xs = [], ys = [];
+    for (let y = cc.miny[c]; y <= cc.maxy[c]; y++)
+      for (let x = cc.minx[c]; x <= cc.maxx[c]; x++)
+        if (cc.labels[y * w + x] === c) { xs.push(x); ys.push(y); }
+    let best = Infinity, bw = 0, bh = 0;
+    for (let a = 0; a < 90; a += 2) {
+      const t = a * Math.PI / 180, co = Math.cos(t), si = Math.sin(t);
+      let u0 = Infinity, u1 = -Infinity, v0 = Infinity, v1 = -Infinity;
+      for (let i = 0; i < xs.length; i++) {
+        const u = xs[i] * co + ys[i] * si, v = ys[i] * co - xs[i] * si;
+        if (u < u0) u0 = u; if (u > u1) u1 = u; if (v < v0) v0 = v; if (v > v1) v1 = v;
+      }
+      const rw = u1 - u0 + 1, rh = v1 - v0 + 1;
+      if (rw * rh < best) { best = rw * rh; bw = rw; bh = rh; }
+    }
+    return { area: best, w: bw, h: bh };
+  }
+
+  function otsu(hist) {
+    let total = 0, sum = 0;
+    for (let i = 0; i < 256; i++) { total += hist[i]; sum += i * hist[i]; }
+    if (total === 0) return 150;
+    let sumB = 0, wB = 0, best = 0, thr = 150;
+    for (let t = 0; t < 256; t++) {
+      wB += hist[t];
+      if (wB === 0) continue;
+      const wF = total - wB;
+      if (wF === 0) break;
+      sumB += t * hist[t];
+      const mB = sumB / wB, mF = (sum - sumB) / wF;
+      const between = wB * wF * (mB - mF) * (mB - mF);
+      if (between > best) { best = between; thr = t; }
+    }
+    return thr;
+  }
+
+  // ======================================================================= Ma trận phối cảnh
+
+  function solve(A, b) {
+    const n = b.length;
+    const M = A.map((row, i) => row.concat([b[i]]));
+    for (let c = 0; c < n; c++) {
+      let p = c;
+      for (let r = c + 1; r < n; r++) if (Math.abs(M[r][c]) > Math.abs(M[p][c])) p = r;
+      if (Math.abs(M[p][c]) < 1e-12) return null;
+      [M[c], M[p]] = [M[p], M[c]];
+      for (let r = 0; r < n; r++) {
+        if (r === c) continue;
+        const f = M[r][c] / M[c][c];
+        if (f === 0) continue;
+        for (let k = c; k <= n; k++) M[r][k] -= f * M[c][k];
+      }
+    }
+    return M.map((row, i) => row[n] / row[i]);
+  }
+
+  /** Ma trận 3×3 (mảng 9 phần tử) đưa 4 điểm src về 4 điểm dst. */
+  function perspective4(src, dst) {
+    const A = [], b = [];
+    for (let i = 0; i < 4; i++) {
+      const [x, y] = src[i], [u, v] = dst[i];
+      A.push([x, y, 1, 0, 0, 0, -u * x, -u * y]); b.push(u);
+      A.push([0, 0, 0, x, y, 1, -v * x, -v * y]); b.push(v);
+    }
+    const h = solve(A, b);
+    return h ? h.concat([1]) : null;
+  }
+
+  function normalizer(pts) {
+    let cx = 0, cy = 0;
+    for (const p of pts) { cx += p[0]; cy += p[1]; }
+    cx /= pts.length; cy /= pts.length;
+    let d = 0;
+    for (const p of pts) d += Math.hypot(p[0] - cx, p[1] - cy);
+    d /= pts.length;
+    const s = d > 0 ? Math.SQRT2 / d : 1;
+    return [s, 0, -s * cx, 0, s, -s * cy, 0, 0, 1];
+  }
+
+  /** Bình phương tối thiểu (chuẩn hóa Hartley) cho ≥ 4 cặp điểm. */
+  function homographyLS(src, dst) {
+    if (src.length === 4) return perspective4(src, dst);
+    const Ts = normalizer(src), Td = normalizer(dst);
+    const ns = src.map(p => apply(Ts, p)), nd = dst.map(p => apply(Td, p));
+    const AtA = Array.from({ length: 8 }, () => new Array(8).fill(0)), Atb = new Array(8).fill(0);
+    const add = (row, val) => {
+      for (let i = 0; i < 8; i++) { Atb[i] += row[i] * val; for (let j = 0; j < 8; j++) AtA[i][j] += row[i] * row[j]; }
+    };
+    for (let i = 0; i < ns.length; i++) {
+      const [x, y] = ns[i], [u, v] = nd[i];
+      add([x, y, 1, 0, 0, 0, -u * x, -u * y], u);
+      add([0, 0, 0, x, y, 1, -v * x, -v * y], v);
+    }
+    const h = solve(AtA, Atb);
+    if (!h) return null;
+    const Hn = h.concat([1]);
+    const Tdi = invert(Td);
+    return Tdi ? normalizeH(multiply(Tdi, multiply(Hn, Ts))) : null;
+  }
+
+  function normalizeH(Hm) { return Hm && Math.abs(Hm[8]) > 1e-12 ? Hm.map(v => v / Hm[8]) : Hm; }
+  function apply(Hm, p) {
+    const x = p[0], y = p[1], d = Hm[6] * x + Hm[7] * y + Hm[8];
+    return [(Hm[0] * x + Hm[1] * y + Hm[2]) / d, (Hm[3] * x + Hm[4] * y + Hm[5]) / d];
+  }
+  function multiply(A, B) {
+    const C = new Array(9).fill(0);
+    for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) for (let k = 0; k < 3; k++) C[r * 3 + c] += A[r * 3 + k] * B[k * 3 + c];
+    return C;
+  }
+  function invert(m) {
+    const [a, b, c, d, e, f, g, h, i] = m;
+    const A = e * i - f * h, B = -(d * i - f * g), C = d * h - e * g;
+    const det = a * A + b * B + c * C;
+    if (!Number.isFinite(det) || Math.abs(det) < 1e-14) return null;
+    return [A / det, -(b * i - c * h) / det, (b * f - c * e) / det, B / det, (a * i - c * g) / det, -(a * f - c * d) / det, C / det, -(a * h - b * g) / det, (a * e - b * d) / det];
+  }
+  function finiteH(Hm) { return !!Hm && Hm.every(Number.isFinite); }
+  function dist(a, b) { return Math.hypot(a[0] - b[0], a[1] - b[1]); }
+
+  /** Ước lượng ma trận bền vững: khớp bình phương tối thiểu rồi loại cặp lệch nhiều (thay RANSAC). */
+  function fitHomography(src, dst, thr) {
+    let idx = src.map((_, i) => i);
+    let Hm = homographyLS(src, dst);
+    for (let iter = 0; iter < 3 && Hm; iter++) {
+      const res = idx.map(i => dist(apply(Hm, src[i]), dst[i]));
+      const sorted = res.slice().sort((a, b) => a - b), med = sorted[sorted.length >> 1];
+      const limit = Math.max(thr, 2.5 * med);
+      const keep = idx.filter((_, k) => res[k] <= limit);
+      if (keep.length === idx.length || keep.length < 4) break;
+      idx = keep;
+      Hm = homographyLS(idx.map(i => src[i]), idx.map(i => dst[i]));
+    }
+    return Hm;
+  }
+
+  // ======================================================================= Kiểm tra chất lượng ảnh
+
+  function assessQuality(gray, w, h, opt) {
+    const warnings = [];
+    if (Math.min(w, h) < opt.minImageSide)
+      return { ok: false, error: `Ảnh quá nhỏ (${w}×${h}px). Cần cạnh ngắn ≥ ${opt.minImageSide}px.`, warnings };
+    let s = 0, s2 = 0;
+    for (let i = 0; i < gray.length; i++) { s += gray[i]; s2 += gray[i] * gray[i]; }
+    const mean = s / gray.length, std = Math.sqrt(Math.max(0, s2 / gray.length - mean * mean));
+    if (std < 6) return { ok: false, error: 'Ảnh gần như đồng màu – không có nội dung phiếu.', warnings };
+    if (mean < 45) warnings.push('Ảnh quá tối – nên chụp nơi đủ sáng.');
+    if (mean > 245) warnings.push('Ảnh quá sáng/cháy sáng.');
+    // Độ nét: phương sai Laplacian trên ảnh thu về ~1000px.
+    const sc = Math.min(1, 1000 / Math.max(w, h));
+    const sw = Math.max(3, Math.round(w * sc)), sh = Math.max(3, Math.round(h * sc));
+    const small = new Float32Array(sw * sh);
+    for (let y = 0; y < sh; y++) {
+      const y0 = Math.floor(y / sc), y1 = Math.max(y0 + 1, Math.min(h, Math.floor((y + 1) / sc)));
+      for (let x = 0; x < sw; x++) {
+        const x0 = Math.floor(x / sc), x1 = Math.max(x0 + 1, Math.min(w, Math.floor((x + 1) / sc)));
+        let t = 0, n = 0;
+        for (let yy = y0; yy < y1; yy += Math.max(1, (y1 - y0) >> 1)) for (let xx = x0; xx < x1; xx += Math.max(1, (x1 - x0) >> 1)) { t += gray[yy * w + xx]; n++; }
+        small[y * sw + x] = t / n;
+      }
+    }
+    let ls = 0, ls2 = 0, ln = 0;
+    for (let y = 1; y < sh - 1; y++) for (let x = 1; x < sw - 1; x++) {
+      const i = y * sw + x, v = small[i - 1] + small[i + 1] + small[i - sw] + small[i + sw] - 4 * small[i];
+      ls += v; ls2 += v * v; ln++;
+    }
+    const lm = ls / ln, sharp = ls2 / ln - lm * lm;
+    if (sharp < opt.minSharpness / 4) return { ok: false, error: `Ảnh bị mờ nặng (độ nét ${sharp.toFixed(1)}) – giữ máy chắc tay và chụp lại.`, warnings, sharpness: sharp };
+    if (sharp < opt.minSharpness) warnings.push(`Ảnh hơi mờ (độ nét ${sharp.toFixed(1)}).`);
+    return { ok: true, warnings, brightness: mean, contrast: std, sharpness: sharp };
+  }
+
+  // ======================================================================= Dò dấu định vị
+
+  /**
+   * Tìm tờ giấy (vùng sáng liên thông lớn nhất) trên ảnh thu nhỏ: dùng để bỏ các vết tối ngoài tờ phiếu
+   * (vân bàn, đồ vật) và ước lượng cỡ trang. Trả về null nếu không tách được (vd nền cũng sáng).
+   */
+  function findPaper(gray, w, h) {
+    const f = Math.max(1, Math.round(Math.max(w, h) / 500));
+    const sw = Math.max(1, Math.floor(w / f)), sh = Math.max(1, Math.floor(h / f));
+    const small = new Uint8Array(sw * sh), hist = new Float64Array(256);
+    for (let y = 0; y < sh; y++) for (let x = 0; x < sw; x++) {
+      let s = 0;
+      for (let yy = 0; yy < f; yy++) for (let xx = 0; xx < f; xx++) s += gray[(y * f + yy) * w + x * f + xx];
+      const v = (s / (f * f)) | 0;
+      small[y * sw + x] = v; hist[v]++;
+    }
+    const t = otsu(hist);
+    const bright = new Uint8Array(sw * sh);
+    for (let i = 0; i < bright.length; i++) bright[i] = small[i] > t ? 1 : 0;
+    const cc = labelComponents(bright, sw, sh);
+    let L = 0;
+    for (let c = 1; c <= cc.count; c++) if (!L || cc.area[c] > cc.area[L]) L = c;
+    if (!L || cc.area[L] < sw * sh * 0.12) return null;
+    // Bên trong tờ giấy = mọi điểm không đi tới được mép ảnh khi đi qua các điểm không thuộc tờ giấy.
+    const inside = new Uint8Array(sw * sh).fill(1);
+    const stack = [];
+    const push = i => { if (inside[i] && cc.labels[i] !== L) { inside[i] = 0; stack.push(i); } };
+    for (let x = 0; x < sw; x++) { push(x); push((sh - 1) * sw + x); }
+    for (let y = 0; y < sh; y++) { push(y * sw); push(y * sw + sw - 1); }
+    while (stack.length) {
+      const i = stack.pop(), x = i % sw, y = (i / sw) | 0;
+      if (x > 0) push(i - 1); if (x < sw - 1) push(i + 1); if (y > 0) push(i - sw); if (y < sh - 1) push(i + sw);
+    }
+    let insideCount = 0;
+    for (let i = 0; i < inside.length; i++) insideCount += inside[i];
+    return {
+      f, sw, sh, inside, fraction: insideCount / inside.length,
+      widthPx: Math.min(cc.maxx[L] - cc.minx[L] + 1, cc.maxy[L] - cc.miny[L] + 1) * f
+    };
+  }
+
+  function insidePaper(paper, x, y) {
+    if (!paper) return true;
+    const cx = Math.floor(x / paper.f), cy = Math.floor(y / paper.f);
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      const xx = cx + dx, yy = cy + dy;
+      if (xx >= 0 && yy >= 0 && xx < paper.sw && yy < paper.sh && paper.inside[yy * paper.sw + xx]) return true;
+    }
+    return false;
+  }
+
+  function detectMarks(gray, bin, w, h, tpl) {
+    const anchorNorm = tpl.anchors.reduce((s, a) => s + Math.max(a.rect.width, 1e-4), 0) / Math.max(1, tpl.anchors.length) || 6 / 210;
+    const paper = findPaper(gray, w, h);
+    const usePaper = paper && paper.fraction < 0.97 ? paper : null;
+    const pageWidthPx = usePaper ? Math.min(Math.min(w, h), Math.max(usePaper.widthPx, Math.min(w, h) * 0.3)) : Math.min(w, h);
+    const expected = Math.max(6, anchorNorm * pageWidthPx);
+    const k = Math.max(3, Math.round(expected * 0.22)) | 1;
+    const opened = openSquare(bin, w, h, k);
+    const cc = labelComponents(opened, w, h);
+    // Ảnh chụp điện thoại: tờ phiếu thường chỉ chiếm 50–90% khung hình nên cho phép dấu nhỏ hơn kỳ vọng.
+    const minArea = Math.pow(expected * 0.28, 2), maxArea = Math.pow(expected * 2.6, 2);
+    const candidates = [];
+    for (let c = 1; c <= cc.count; c++) {
+      const area = cc.area[c];
+      if (area < minArea || area > maxArea) continue;
+      const bw = cc.maxx[c] - cc.minx[c] + 1, bh = cc.maxy[c] - cc.miny[c] + 1;
+      if (Math.max(bw, bh) / Math.min(bw, bh) > 2.4) continue;
+      const rr = minAreaRect(cc, w, c);
+      if (Math.max(rr.w, rr.h) / Math.max(1, Math.min(rr.w, rr.h)) > 1.6) continue;
+      const fill = area / rr.area;
+      if (fill < 0.82) continue;
+      const cx = cc.sx[c] / area, cy = cc.sy[c] / area;
+      if (!insidePaper(usePaper, cx, cy)) continue;
+      const side = Math.sqrt(area), half = Math.max(1, Math.floor(side / 4));
+      let s = 0, n = 0;
+      for (let y = Math.max(0, Math.floor(cy) - half); y < Math.min(h, Math.floor(cy) + half); y++)
+        for (let x = Math.max(0, Math.floor(cx) - half); x < Math.min(w, Math.floor(cx) + half); x++) { s += gray[y * w + x]; n++; }
+      if (!n) continue;
+      const darkness = 1 - s / n / 255;
+      if (darkness < 0.5) continue;
+      candidates.push({ x: cx, y: cy, side, fill, darkness });
+    }
+    return { candidates, expected, paper: usePaper };
+  }
+
+  function orderClockwise(pts) {
+    const cx = pts.reduce((s, p) => s + p[0], 0) / pts.length, cy = pts.reduce((s, p) => s + p[1], 0) / pts.length;
+    const sorted = pts.slice().sort((a, b) => Math.atan2(a[1] - cy, a[0] - cx) - Math.atan2(b[1] - cy, b[0] - cx));
+    let start = 0;
+    for (let i = 1; i < sorted.length; i++) if (sorted[i][0] + sorted[i][1] < sorted[start][0] + sorted[start][1]) start = i;
+    return sorted.map((_, i) => sorted[(start + i) % sorted.length]);
+  }
+
+  function pickTemplateCorners(anchors) {
+    const targets = [[0, 0], [1, 0], [1, 1], [0, 1]], used = new Set(), out = [];
+    for (const [tx, ty] of targets) {
+      let best = -1, bd = Infinity;
+      anchors.forEach((a, j) => {
+        if (used.has(j)) return;
+        const cx = a.rect.x + a.rect.width / 2, cy = a.rect.y + a.rect.height / 2;
+        const d = (cx - tx) ** 2 + (cy - ty) ** 2;
+        if (d < bd) { bd = d; best = j; }
+      });
+      used.add(best); out.push(best);
+    }
+    return out;
+  }
+
+  function pickExtremes(pts) {
+    const by = f => pts.reduce((b, p) => (f(p) < f(b) ? p : b));
+    return [by(p => p[0] + p[1]), by(p => -(p[0] - p[1])), by(p => -(p[0] + p[1])), by(p => p[0] - p[1])];
+  }
+
+  function darkRatio(bin, w, h, c, side) {
+    const half = Math.max(2, Math.floor(side / 3));
+    const x0 = Math.max(0, Math.floor(c[0]) - half), y0 = Math.max(0, Math.floor(c[1]) - half);
+    const x1 = Math.min(w, Math.floor(c[0]) + half), y1 = Math.min(h, Math.floor(c[1]) + half);
+    if (x1 <= x0 || y1 <= y0) return 0;
+    let n = 0;
+    for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) n += bin[y * w + x];
+    return n / ((x1 - x0) * (y1 - y0));
+  }
+
+  function evaluateHypothesis(quad, shift, corners, tplPts, cands, bin, w, h, tol, side) {
+    const src = [], dst = [];
+    for (let i = 0; i < 4; i++) { src.push(quad[(i + shift) % 4]); dst.push(tplPts[corners[i]]); }
+    const Hm = perspective4(src, dst);
+    if (!finiteH(Hm)) return null;
+    const inv = invert(Hm);
+    if (!inv) return null;
+    const used = new Set(), pairs = [];
+    let errSum = 0, darkUnmatched = 0;
+    for (let a = 0; a < tplPts.length; a++) {
+      const p = apply(inv, tplPts[a]);
+      let bi = -1, bd = tol;
+      for (let c = 0; c < cands.length; c++) {
+        if (used.has(c)) continue;
+        const d = Math.hypot(p[0] - cands[c].x, p[1] - cands[c].y);
+        if (d < bd) { bd = d; bi = c; }
+      }
+      if (bi >= 0) { used.add(bi); pairs.push({ a, c: bi }); errSum += bd; }
+      else darkUnmatched += darkRatio(bin, w, h, p, side) > 0.6 ? 0.5 : 0;
+    }
+    if (pairs.length < 4) return null;
+    const meanErr = errSum / pairs.length;
+    return { H: Hm, rotation: shift * 90, pairs, score: pairs.length * 2 + darkUnmatched - meanErr / tol, meanErr };
+  }
+
+  function polygonArea(p) {
+    let s = 0;
+    for (let i = 0; i < p.length; i++) { const a = p[i], b = p[(i + 1) % p.length]; s += a[0] * b[1] - b[0] * a[1]; }
+    return Math.abs(s) / 2;
+  }
+  function isConvex(p) {
+    let sign = 0;
+    for (let i = 0; i < p.length; i++) {
+      const a = p[i], b = p[(i + 1) % p.length], c = p[(i + 2) % p.length];
+      const z = (b[0] - a[0]) * (c[1] - b[1]) - (b[1] - a[1]) * (c[0] - b[0]);
+      if (Math.abs(z) < 1e-9) continue;
+      const s = Math.sign(z);
+      if (sign && s !== sign) return false;
+      sign = s;
+    }
+    return sign !== 0;
+  }
+  function* combinations(n, k) {
+    if (n < k) return;
+    const idx = Array.from({ length: k }, (_, i) => i);
+    while (true) {
+      yield idx.slice();
+      let i = k - 1;
+      while (i >= 0 && idx[i] === n - k + i) i--;
+      if (i < 0) return;
+      idx[i]++;
+      for (let j = i + 1; j < k; j++) idx[j] = idx[j - 1] + 1;
+    }
+  }
+
+  function align(gray, bin, w, h, det, tpl, W, Hh) {
+    const anchors = tpl.anchors;
+    if (anchors.length < 4) return { ok: false, error: 'Mẫu phiếu cần ít nhất 4 dấu định vị.', expected: anchors.length };
+    const cands = det.candidates;
+    if (cands.length < 4)
+      return { ok: false, error: `Chỉ thấy ${cands.length}/${anchors.length} ô vuông đen định vị – hãy chụp đủ cả tờ phiếu (thấy rõ 4 góc).`, expected: anchors.length };
+    const tplPts = anchors.map(a => [(a.rect.x + a.rect.width / 2) * W, (a.rect.y + a.rect.height / 2) * Hh]);
+    const corners = pickTemplateCorners(anchors);
+    const tol = det.expected * 0.8 + Math.hypot(w, h) * 0.006;
+    const better = (a, b) => (!b ? a : !a || b.score > a.score ? b : a);
+    let best = null;
+    const ext = pickExtremes(cands.map(c => [c.x, c.y]));
+    for (let k = 0; k < 4; k++) best = better(best, evaluateHypothesis(ext, k, corners, tplPts, cands, bin, w, h, tol, det.expected));
+    const required = Math.max(4, Math.ceil(anchors.length * 0.75));
+    if (!best || best.pairs.length < required) {
+      const top = cands.slice().sort((a, b) => b.fill * b.darkness - a.fill * a.darkness).slice(0, 12).map(c => [c.x, c.y]);
+      const minArea = w * h * 0.08;
+      for (const combo of combinations(top.length, 4)) {
+        const ordered = orderClockwise(combo.map(i => top[i]));
+        if (!isConvex(ordered) || polygonArea(ordered) < minArea) continue;
+        for (let k = 0; k < 4; k++) best = better(best, evaluateHypothesis(ordered, k, corners, tplPts, cands, bin, w, h, tol, det.expected));
+      }
+    }
+    if (!best || best.pairs.length < 4)
+      return { ok: false, error: 'Không ghép được các ô vuông định vị với mẫu phiếu (sai mẫu phiếu, ảnh bị cắt góc hoặc chụp quá nghiêng).', expected: anchors.length };
+
+    const src = best.pairs.map(p => [cands[p.c].x, cands[p.c].y]);
+    const dst = best.pairs.map(p => tplPts[p.a]);
+    let Hm = best.pairs.length >= 5 ? fitHomography(src, dst, Math.max(3, W / 300)) : best.H;
+    if (!finiteH(Hm)) Hm = best.H;
+    if (!finiteH(Hm)) return { ok: false, error: 'Ma trận phối cảnh không hợp lệ.', expected: anchors.length };
+    const error = src.reduce((s, p, i) => s + dist(apply(Hm, p), dst[i]), 0) / src.length;
+
+    const warnings = [];
+    const inv = invert(Hm);
+    let skew = 0;
+    if (inv) {
+      const tl = apply(inv, tplPts[corners[0]]), tr = apply(inv, tplPts[corners[1]]);
+      skew = Math.atan2(tr[1] - tl[1], tr[0] - tl[0]) * 180 / Math.PI - best.rotation;
+      while (skew > 180) skew -= 360;
+      while (skew < -180) skew += 360;
+    }
+    if (best.rotation !== 0) warnings.push(`Phiếu bị xoay ${best.rotation}° – đã tự xoay lại.`);
+    if (Math.abs(skew) > 2) warnings.push(`Phiếu bị nghiêng ${skew.toFixed(1)}° – đã tự hiệu chỉnh.`);
+    if (best.pairs.length < anchors.length) warnings.push(`Chỉ khớp ${best.pairs.length}/${anchors.length} dấu định vị.`);
+    return { ok: true, H: Hm, rotation: best.rotation, matched: best.pairs.length, expected: anchors.length, error, skew, warnings };
+  }
+
+  // ======================================================================= Nắn ảnh
+
+  /** Nắn ảnh nguồn về canvas W×H theo ma trận Hm (nguồn → canvas). Trả về ảnh xám (và RGBA nếu có). */
+  function warp(gray, rgba, w, h, Hm, W, Hh) {
+    const inv = invert(Hm);
+    const g = new Uint8Array(W * Hh);
+    const out = rgba ? new Uint8ClampedArray(W * Hh * 4) : null;
+    const [a, b, c, d, e, f, p, q, r] = inv;
+    for (let y = 0; y < Hh; y++) {
+      for (let x = 0; x < W; x++) {
+        const den = p * x + q * y + r;
+        const sx = (a * x + b * y + c) / den, sy = (d * x + e * y + f) / den;
+        const o = y * W + x;
+        if (!(sx >= 0 && sy >= 0 && sx <= w - 1 && sy <= h - 1)) {
+          g[o] = 255;
+          if (out) { const k = o * 4; out[k] = out[k + 1] = out[k + 2] = out[k + 3] = 255; }
+          continue;
+        }
+        const x0 = sx | 0, y0 = sy | 0, fx = sx - x0, fy = sy - y0;
+        const x1 = x0 + 1 < w ? x0 + 1 : x0, y1 = y0 + 1 < h ? y0 + 1 : y0;
+        const i00 = y0 * w + x0, i01 = y0 * w + x1, i10 = y1 * w + x0, i11 = y1 * w + x1;
+        const w00 = (1 - fx) * (1 - fy), w01 = fx * (1 - fy), w10 = (1 - fx) * fy, w11 = fx * fy;
+        g[o] = gray[i00] * w00 + gray[i01] * w01 + gray[i10] * w10 + gray[i11] * w11 + 0.5;
+        if (out) {
+          const k = o * 4, k00 = i00 * 4, k01 = i01 * 4, k10 = i10 * 4, k11 = i11 * 4;
+          out[k] = rgba[k00] * w00 + rgba[k01] * w01 + rgba[k10] * w10 + rgba[k11] * w11;
+          out[k + 1] = rgba[k00 + 1] * w00 + rgba[k01 + 1] * w01 + rgba[k10 + 1] * w10 + rgba[k11 + 1] * w11;
+          out[k + 2] = rgba[k00 + 2] * w00 + rgba[k01 + 2] * w01 + rgba[k10 + 2] * w10 + rgba[k11 + 2] * w11;
+          out[k + 3] = 255;
+        }
+      }
+    }
+    return { gray: g, rgba: out };
+  }
+
+  /** Tinh chỉnh: dò lại dấu định vị trên ảnh đã nắn và hiệu chỉnh sai lệch còn lại. */
+  function refine(gray, w, h, W, Hh, Hm, map) {
+    const inv = invert(Hm);
+    if (!inv) return { H: Hm, error: null, matched: 0 };
+    // Chỉ nắn vùng quanh từng dấu định vị (nhanh hơn nắn cả trang).
+    const sample = (x, y) => {
+      const d = inv[6] * x + inv[7] * y + inv[8];
+      const sx = (inv[0] * x + inv[1] * y + inv[2]) / d, sy = (inv[3] * x + inv[4] * y + inv[5]) / d;
+      if (!(sx >= 0 && sy >= 0 && sx <= w - 1 && sy <= h - 1)) return 255;
+      const x0 = sx | 0, y0 = sy | 0, fx = sx - x0, fy = sy - y0, x1 = x0 + 1 < w ? x0 + 1 : x0, y1 = y0 + 1 < h ? y0 + 1 : y0;
+      return (gray[y0 * w + x0] * (1 - fx) + gray[y0 * w + x1] * fx) * (1 - fy) + (gray[y1 * w + x0] * (1 - fx) + gray[y1 * w + x1] * fx) * fy + 0.5 | 0;
+    };
+    const measured = [], expected = [];
+    for (const a of map.anchors) {
+      const center = [a.x + a.w / 2, a.y + a.h / 2];
+      const pad = Math.max(a.w, a.h) * 0.8;
+      const rx = Math.max(0, Math.trunc(a.x - pad)), ry = Math.max(0, Math.trunc(a.y - pad));
+      const rx1 = Math.min(W, Math.trunc(a.x - pad) + Math.trunc(a.w + 2 * pad)), ry1 = Math.min(Hh, Math.trunc(a.y - pad) + Math.trunc(a.h + 2 * pad));
+      const rw = rx1 - rx, rh = ry1 - ry;
+      if (rw < 4 || rh < 4) continue;
+      const roi = new Uint8Array(rw * rh), hist = new Float64Array(256);
+      for (let y = 0; y < rh; y++) for (let x = 0; x < rw; x++) { const v = sample(x + rx, y + ry); roi[y * rw + x] = v; hist[v]++; }
+      const t = otsu(hist);
+      const bin = new Uint8Array(rw * rh);
+      for (let i = 0; i < bin.length; i++) bin[i] = roi[i] <= t ? 1 : 0;
+      const cc = labelComponents(bin, rw, rh);
+      const expArea = a.w * a.h;
+      let found = null, bestDiff = Infinity;
+      for (let c = 1; c <= cc.count; c++) {
+        const area = cc.area[c];
+        if (area < expArea * 0.35 || area > expArea * 2.5) continue;
+        const bw = cc.maxx[c] - cc.minx[c] + 1, bh = cc.maxy[c] - cc.miny[c] + 1;
+        if (area / (bw * bh) < 0.75) continue;
+        const p = [cc.sx[c] / area + rx, cc.sy[c] / area + ry];
+        const diff = Math.abs(area - expArea) / expArea + dist(p, center) / Math.max(a.w, 1);
+        if (diff < bestDiff) { bestDiff = diff; found = p; }
+      }
+      if (found) { measured.push(found); expected.push(center); }
+    }
+    if (measured.length < 4) return { H: Hm, error: null, matched: measured.length };
+    const before = measured.reduce((s, m, i) => s + dist(m, expected[i]), 0) / measured.length;
+    const corr = measured.length >= 5 ? fitHomography(measured, expected, 3) : perspective4(measured, expected);
+    if (!finiteH(corr)) return { H: Hm, error: before, matched: measured.length };
+    const after = measured.reduce((s, m, i) => s + dist(apply(corr, m), expected[i]), 0) / measured.length;
+    if (!(after < before)) return { H: Hm, error: before, matched: measured.length };
+    return { H: normalizeH(multiply(corr, Hm)), error: after, matched: measured.length };
+  }
+
+  // ======================================================================= Đo độ tô
+
+  function resizeArea(src, w, h, nw, nh) {
+    const out = new Float32Array(nw * nh);
+    for (let y = 0; y < nh; y++) {
+      const y0 = Math.floor(y * h / nh), y1 = Math.max(y0 + 1, Math.floor((y + 1) * h / nh));
+      for (let x = 0; x < nw; x++) {
+        const x0 = Math.floor(x * w / nw), x1 = Math.max(x0 + 1, Math.floor((x + 1) * w / nw));
+        let s = 0;
+        for (let yy = y0; yy < y1; yy++) for (let xx = x0; xx < x1; xx++) s += src[yy * w + xx];
+        out[y * nw + x] = s / ((y1 - y0) * (x1 - x0));
+      }
+    }
+    return out;
+  }
+  function minMaxFilter(src, w, h, k, isMax) {
+    const half = k >> 1, tmp = new Float32Array(w * h), out = new Float32Array(w * h);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      let v = isMax ? -Infinity : Infinity;
+      for (let i = Math.max(0, x - half); i <= Math.min(w - 1, x + half); i++) { const s = src[y * w + i]; v = isMax ? (s > v ? s : v) : (s < v ? s : v); }
+      tmp[y * w + x] = v;
+    }
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      let v = isMax ? -Infinity : Infinity;
+      for (let i = Math.max(0, y - half); i <= Math.min(h - 1, y + half); i++) { const s = tmp[i * w + x]; v = isMax ? (s > v ? s : v) : (s < v ? s : v); }
+      out[y * w + x] = v;
+    }
+    return out;
+  }
+  function gaussian(src, w, h, sigma) {
+    const r = Math.max(1, Math.ceil(sigma * 3)), k = [];
+    let sum = 0;
+    for (let i = -r; i <= r; i++) { const v = Math.exp(-(i * i) / (2 * sigma * sigma)); k.push(v); sum += v; }
+    for (let i = 0; i < k.length; i++) k[i] /= sum;
+    const tmp = new Float32Array(w * h), out = new Float32Array(w * h);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      let s = 0;
+      for (let i = -r; i <= r; i++) s += src[y * w + clamp(x + i, 0, w - 1)] * k[i + r];
+      tmp[y * w + x] = s;
+    }
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      let s = 0;
+      for (let i = -r; i <= r; i++) s += tmp[clamp(y + i, 0, h - 1) * w + x] * k[i + r];
+      out[y * w + x] = s;
+    }
+    return out;
+  }
+
+  /** Làm phẳng độ sáng: chia ảnh cho nền (phép đóng hình thái xóa nét mực) để nền ≈ 255 – bù bóng đổ ảnh chụp. */
+  function flattenIllumination(gray, w, h, maxRadius) {
+    const k = Math.max(15, ((maxRadius * 5) | 0) | 1);
+    const sw = Math.max(1, (w / 4) | 0), sh = Math.max(1, (h / 4) | 0);
+    const small = resizeArea(gray, w, h, sw, sh);
+    const kk = Math.max(3, ((k / 4) | 0) | 1);
+    let bg = minMaxFilter(minMaxFilter(small, sw, sh, kk, true), sw, sh, kk, false);
+    bg = gaussian(bg, sw, sh, Math.max(2, k / 8));
+    const flat = new Uint8Array(w * h);
+    const fx = sw / w, fy = sh / h;
+    for (let y = 0; y < h; y++) {
+      const syf = Math.max(0, (y + 0.5) * fy - 0.5), y0 = Math.min(sh - 1, syf | 0), y1 = Math.min(sh - 1, y0 + 1), wy = syf - y0;
+      for (let x = 0; x < w; x++) {
+        const sxf = Math.max(0, (x + 0.5) * fx - 0.5), x0 = Math.min(sw - 1, sxf | 0), x1 = Math.min(sw - 1, x0 + 1), wx = sxf - x0;
+        const b = (bg[y0 * sw + x0] * (1 - wx) + bg[y0 * sw + x1] * wx) * (1 - wy) + (bg[y1 * sw + x0] * (1 - wx) + bg[y1 * sw + x1] * wx) * wy;
+        const v = b > 0 ? gray[y * w + x] * 255 / b : 0;
+        flat[y * w + x] = v > 255 ? 255 : v + 0.5;
+      }
+    }
+    return flat;
+  }
+
+  const maskCache = new Map();
+  function circleMask(r) {
+    if (maskCache.has(r)) return maskCache.get(r);
+    const pts = [];
+    for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) if (dx * dx + dy * dy <= r * r + r * 0.3) pts.push(dx, dy);
+    const m = new Int32Array(pts);
+    maskCache.set(r, m);
+    return m;
+  }
+
+  function measureBubbles(wg, W, Hh, map) {
+    const cells = [];
+    for (const reg of map.regions) for (const g of reg.groups) for (const c of g.cells) cells.push(c);
+    if (!cells.length) return [];
+    const maxR = cells.reduce((m, c) => Math.max(m, c.r), 0);
+    const flat = flattenIllumination(wg, W, Hh, maxR);
+    // Ngưỡng mực: Otsu trên điểm ảnh trong các ô tròn.
+    const hist = new Float64Array(256), step = Math.max(1, Math.floor(cells.length / 400));
+    for (let i = 0; i < cells.length; i += step) {
+      const c = cells[i], r = Math.round(c.r);
+      const x0 = Math.max(0, (c.x | 0) - r), y0 = Math.max(0, (c.y | 0) - r), x1 = Math.min(W, (c.x | 0) - r + 2 * r + 1), y1 = Math.min(Hh, (c.y | 0) - r + 2 * r + 1);
+      for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) hist[flat[y * W + x]]++;
+    }
+    const inkThr = clamp(otsu(hist), 110, 190);
+    const out = [];
+    for (const reg of map.regions) {
+      for (const g of reg.groups) {
+        const bubbles = g.cells.map(cell => {
+          const r = Math.max(1, Math.round(cell.r * 0.68));
+          const mask = circleMask(r), area = mask.length / 2;
+          const shift = Math.max(1, Math.round(cell.r * 0.2));
+          let bestFill = 0, bestDark = 0, first = true;
+          for (const dy of [0, -shift, shift]) for (const dx of [0, -shift, shift]) {
+            const cx = Math.round(cell.x) + dx, cy = Math.round(cell.y) + dy;
+            if (cx - r < 0 || cy - r < 0 || cx + r >= W || cy + r >= Hh) continue;
+            let ink = 0;
+            for (let k = 0; k < mask.length; k += 2) if (flat[(cy + mask[k + 1]) * W + cx + mask[k]] <= inkThr) ink++;
+            const fill = ink / area;
+            if (!first && fill <= bestFill) continue;
+            let s = 0;
+            for (let k = 0; k < mask.length; k += 2) s += flat[(cy + mask[k + 1]) * W + cx + mask[k]];
+            bestFill = fill; bestDark = 1 - s / area / 255; first = false;
+          }
+          return { cell, fill: bestFill, dark: bestDark };
+        });
+        out.push({ region: reg.region, group: g, bubbles });
+      }
+    }
+    return out;
+  }
+
+  // ======================================================================= Quyết định đáp án
+
+  function median(sorted) {
+    const n = sorted.length;
+    return n === 0 ? 0 : n % 2 ? sorted[n >> 1] : (sorted[n / 2 - 1] + sorted[n / 2]) / 2;
+  }
+
+  function computeThresholds(ms, opt) {
+    const fills = [];
+    for (const m of ms) for (const b of m.bubbles) fills.push(b.fill);
+    fills.sort((a, b) => a - b);
+    let t;
+    if (!fills.length) return { blank: opt.blank, filled: opt.filled, baseline: 0, darkLimit: 1 };
+    if (!opt.adaptive) t = { blank: opt.blank, filled: opt.filled, baseline: 0, darkLimit: 1 };
+    else {
+      const lower = fills.slice(0, Math.max(1, Math.floor(fills.length * 0.6)));
+      const baseline = median(lower);
+      const mad = median(lower.map(f => Math.abs(f - baseline)).sort((a, b) => a - b));
+      const sigma = 1.4826 * mad;
+      const blank = clamp(Math.max(opt.blank, baseline + Math.max(0.08, 4 * sigma)), 0.05, 0.6);
+      const filled = clamp(Math.max(opt.filled, blank + opt.minSeparation), blank + 0.05, 0.85);
+      t = { blank, filled, baseline, darkLimit: 1 };
+    }
+    const dark = [];
+    for (const m of ms) for (const b of m.bubbles) if (b.fill < t.blank) dark.push(b.dark);
+    if (dark.length >= 10) {
+      dark.sort((a, b) => a - b);
+      const md = median(dark);
+      const sg = 1.4826 * median(dark.map(d => Math.abs(d - md)).sort((a, b) => a - b));
+      t.darkLimit = Math.min(0.95, md + Math.max(0.07, 4 * sg));
+    }
+    return t;
+  }
+
+  function findLightMark(m, t) {
+    if (m.bubbles.length < 2) return -1;
+    let best = -1, bestMargin = 0;
+    m.bubbles.forEach((b, i) => {
+      if (b.dark < t.darkLimit) return;
+      const others = m.bubbles.filter((_, j) => j !== i).map(x => x.dark).sort((a, c) => a - c);
+      const margin = b.dark - median(others);
+      if (margin >= 0.08 && margin > bestMargin) { best = i; bestMargin = margin; }
+    });
+    return best;
+  }
+
+  function decide(m, t, opt) {
+    const bs = m.bubbles;
+    if (!bs.length) return { m, index: -1, value: '', issue: ISSUE.Blank, conf: 1 };
+    const order = bs.map((_, i) => i).sort((a, b) => bs[b].fill - bs[a].fill);
+    const f1 = bs[order[0]].fill, f2 = order.length > 1 ? bs[order[1]].fill : 0;
+    const filledCount = bs.filter(b => b.fill >= t.filled).length;
+    if (f1 < t.blank) {
+      if (findLightMark(m, t) >= 0) return { m, index: -1, value: UNCLEAR, issue: ISSUE.Low, conf: 0.3 };
+      const conf = f1 <= 0.6 * t.blank ? 1 : 1 - 0.5 * (f1 - 0.6 * t.blank) / (0.4 * t.blank);
+      return { m, index: -1, value: '', issue: ISSUE.Blank, conf: clamp(conf, 0.5, 1) };
+    }
+    if (filledCount >= 2) return { m, index: -1, value: MULTI, issue: ISSUE.Multiple, conf: clamp(0.5 + 0.5 * (f2 - t.filled) / 0.15, 0.5, 1) };
+    if (f1 < t.filled) return { m, index: -1, value: UNCLEAR, issue: ISSUE.Low, conf: clamp(0.2 + 0.3 * (f1 - t.blank) / Math.max(1e-6, t.filled - t.blank), 0, 0.5) };
+    const strength = clamp((f1 - t.blank) / Math.max(1e-6, t.filled - t.blank), 0, 1.5) / 1.5;
+    const separation = clamp((f1 - f2) / (2 * opt.minSeparation), 0, 1);
+    const confidence = 0.5 * strength + 0.5 * separation;
+    if (f2 >= t.blank && f1 - f2 < opt.minSeparation) return { m, index: -1, value: UNCLEAR, issue: ISSUE.Low, conf: Math.min(confidence, 0.4) };
+    if (confidence < opt.minConfidence) return { m, index: -1, value: UNCLEAR, issue: ISSUE.Low, conf: confidence };
+    return { m, index: order[0], value: bs[order[0]].cell.label, issue: ISSUE.None, conf: confidence };
+  }
+
+  function toChar(d) {
+    if (d.issue === ISSUE.Blank) return BLANK;
+    if (d.issue === ISSUE.Multiple) return MULTI;
+    if (d.issue === ISSUE.Low || d.issue === ISSUE.Invalid) return UNCLEAR;
+    return d.value.length ? d.value[0] : UNCLEAR;
+  }
+  function trimBlank(s) { return s.replace(/^_+|_+$/g, ''); }
+
+  function buildField(decisions, kind) {
+    const field = decisions.filter(d => d.m.region.kind === kind);
+    if (!field.length) return null;
+    const region = field[0].m.region;
+    const ordered = field.filter(d => d.m.region === region).sort((a, b) => a.m.group.pos - b.m.group.pos);
+    const raw = ordered.map(toChar).join('');
+    const trimmed = trimBlank(raw);
+    const complete = trimmed.length > 0 && /^\d+$/.test(trimmed);
+    return { value: complete ? trimmed : raw, complete, confidence: Math.min(...ordered.map(d => d.conf)) };
+  }
+
+  function worst(items, allBlankIsBlank) {
+    if (items.some(d => d.issue === ISSUE.Multiple)) return ISSUE.Multiple;
+    if (items.some(d => d.issue === ISSUE.Low)) return ISSUE.Low;
+    if (allBlankIsBlank && items.every(d => d.issue === ISSUE.Blank)) return ISSUE.Blank;
+    return ISSUE.None;
+  }
+
+  function buildQuestions(decisions) {
+    const map = new Map();
+    for (const d of decisions) {
+      if (d.m.group.kind === 'digit') continue;
+      const key = d.m.group.part * 10000 + d.m.group.q;
+      if (!map.has(key)) map.set(key, []);
+      map.get(key).push(d);
+    }
+    const G = H.grading;
+    const out = [];
+    for (const key of [...map.keys()].sort((a, b) => a - b)) {
+      const items = map.get(key).sort((a, b) => a.m.group.pos - b.m.group.pos);
+      const kind = items[0].m.group.kind;
+      const fills = [];
+      for (const d of items) for (const b of d.m.bubbles) fills.push(Math.round(b.fill * 1000) / 1000);
+      let value, issue;
+      if (kind === 'choice') {
+        value = items[0].value.toUpperCase();
+        issue = items[0].issue;
+      } else if (kind === 'tf') {
+        value = items.map(d => (d.issue === ISSUE.None ? (G.normalizeTFChar(d.value[0] || '?') || UNCLEAR) : toChar(d))).join('');
+        issue = worst(items, true);
+      } else {
+        const raw = items.map(toChar).join('');
+        issue = worst(items, true);
+        value = trimBlank(raw);
+        if (issue === ISSUE.None || (issue === ISSUE.Blank && value.length > 0)) {
+          const parsed = G.parseShortAnswer(raw, { maxLength: items.length });
+          issue = parsed.status === 'ok' ? ISSUE.None : parsed.status === 'blank' ? ISSUE.Blank : ISSUE.Invalid;
+          if (parsed.status === 'ok') value = parsed.canonical;
+        }
+      }
+      out.push({ part: items[0].m.group.part, q: items[0].m.group.q, kind, value, issue, confidence: Math.round(Math.min(...items.map(d => d.conf)) * 1e4) / 1e4, fills });
+    }
+    return out;
+  }
+
+  // ======================================================================= Quy trình đầy đủ
+
+  /**
+   * Nhận diện một ảnh phiếu.
+   * @param {{rgba:Uint8ClampedArray|Uint8Array, w:number, h:number}} image ảnh làm việc (đã thu về ≤ ~2200px)
+   * @param {object} tpl mẫu phiếu (parseTemplate)
+   */
+  function recognize(image, tpl, options) {
+    const opt = Object.assign({}, OPTIONS, options || {});
+    const t0 = Date.now();
+    const { rgba, w, h } = image;
+    const gray = image.gray || rgbaToGray(rgba, w, h);
+    const quality = assessQuality(gray, w, h, opt);
+    if (!quality.ok) return { ok: false, error: quality.error, warnings: quality.warnings };
+    const warnings = quality.warnings.slice();
+    const denoised = blur5(gray, w, h);
+    const block = Math.max(31, ((Math.min(w, h) / 12) | 0) | 1);
+    const bin = adaptiveThresholdInv(denoised, w, h, block, 12);
+    const det = detectMarks(gray, bin, w, h, tpl);
+    const [W, Hh] = canvasSize(tpl, opt.dpi);
+    const map = buildMap(tpl, W, Hh);
+    const al = align(gray, bin, w, h, det, tpl, W, Hh);
+    if (!al.ok) return { ok: false, error: al.error, warnings, anchorsFound: det.candidates.length };
+
+    let Hm = al.H;
+    const ref = refine(gray, w, h, W, Hh, Hm, map);
+    let alignError = al.error / 1; // sai số trên canvas (đơn vị pixel canvas)
+    if (ref.error != null) { Hm = ref.H; alignError = ref.error; }
+    warnings.push(...al.warnings.filter(x => !(x.startsWith('Chỉ khớp') && (ref.matched || 0) >= al.expected)));
+    const final = warp(gray, rgba, w, h, Hm, W, Hh);
+
+    const ms = measureBubbles(final.gray, W, Hh, map);
+    const t = computeThresholds(ms, opt);
+    const decisions = ms.map(m => decide(m, t, opt));
+    const candidate = buildField(decisions, 'CandidateNumber');
+    const examCode = buildField(decisions, 'ExamCode');
+    const questions = buildQuestions(decisions);
+    const needsReview = alignError > opt.maxAlignmentErrorPx;
+    if (needsReview) warnings.push(`Sai số căn chỉnh ${alignError.toFixed(1)}px – nên kiểm tra lại ảnh.`);
+    return {
+      ok: true, warnings, rotation: al.rotation, anchorsMatched: Math.max(al.matched, ref.matched || 0), anchorsExpected: al.expected,
+      alignmentError: Math.round(alignError * 100) / 100, skew: al.skew,
+      candidateNumber: candidate, examCode, questions, thresholds: t,
+      confidence: decisions.length ? decisions.reduce((s, d) => s + d.conf, 0) / decisions.length : 0,
+      warped: { w: W, h: Hh, gray: final.gray, rgba: final.rgba }, map,
+      elapsedMs: Date.now() - t0
+    };
+  }
+
+  // ======================================================================= Vẽ kết quả chấm (đúng xanh, sai đỏ, tô lỗi vàng)
+
+  const COLORS = { correct: [0x2E, 0x7D, 0x32], wrong: [0xD3, 0x2F, 0x2F], problem: [0xF9, 0xA8, 0x25], detected: [0x15, 0x65, 0xC0] };
+
+  function makePainter(img, W, Hh, radius) {
+    const overlay = new Uint8ClampedArray(img);
+    const strokes = [];
+    const thickness = Math.max(2, Math.floor(W / 520));
+    const blendPx = (buf, x, y, col, a) => {
+      if (x < 0 || y < 0 || x >= W || y >= Hh || a <= 0) return;
+      const k = (y * W + x) * 4;
+      buf[k] += (col[0] - buf[k]) * a; buf[k + 1] += (col[1] - buf[k + 1]) * a; buf[k + 2] += (col[2] - buf[k + 2]) * a;
+    };
+    const disc = (buf, cx, cy, R, col) => {
+      for (let y = Math.floor(cy - R - 1); y <= Math.ceil(cy + R + 1); y++)
+        for (let x = Math.floor(cx - R - 1); x <= Math.ceil(cx + R + 1); x++)
+          blendPx(buf, x, y, col, clamp(R + 0.5 - Math.hypot(x - cx, y - cy), 0, 1));
+    };
+    const ring = (buf, cx, cy, R, T, col) => {
+      const lo = R - T / 2, hi = R + T / 2;
+      for (let y = Math.floor(cy - hi - 1); y <= Math.ceil(cy + hi + 1); y++)
+        for (let x = Math.floor(cx - hi - 1); x <= Math.ceil(cx + hi + 1); x++) {
+          const d = Math.hypot(x - cx, y - cy);
+          blendPx(buf, x, y, col, clamp(Math.min(d - lo, hi - d) + 0.5, 0, 1));
+        }
+    };
+    const box = (buf, x0, y0, x1, y1, col) => {
+      for (let y = Math.max(0, Math.round(y0)); y < Math.min(Hh, Math.round(y1)); y++)
+        for (let x = Math.max(0, Math.round(x0)); x < Math.min(W, Math.round(x1)); x++) blendPx(buf, x, y, col, 1);
+    };
+    return {
+      fill(cell, col) {
+        const cx = Math.round(cell.x), cy = Math.round(cell.y);
+        disc(overlay, cx, cy, radius, col);
+        strokes.push(() => ring(img, cx, cy, radius + thickness, thickness + 1, col));
+      },
+      ring(cell, col) {
+        const cx = Math.round(cell.x), cy = Math.round(cell.y);
+        strokes.push(() => ring(img, cx, cy, radius + thickness, thickness + 1, col));
+      },
+      frame(cells, col, filled) {
+        if (!cells.length) return;
+        const pad = radius * 1.6;
+        const x0 = Math.floor(Math.min(...cells.map(c => c.x)) - pad), y0 = Math.floor(Math.min(...cells.map(c => c.y)) - pad);
+        const x1 = Math.ceil(Math.max(...cells.map(c => c.x)) + pad), y1 = Math.ceil(Math.max(...cells.map(c => c.y)) + pad);
+        if (filled) box(overlay, x0, y0, x1, y1, col);
+        const t2 = thickness / 2;
+        strokes.push(() => {
+          box(img, x0 - t2, y0 - t2, x1 + t2, y0 + t2, col); box(img, x0 - t2, y1 - t2, x1 + t2, y1 + t2, col);
+          box(img, x0 - t2, y0 - t2, x0 + t2, y1 + t2, col); box(img, x1 - t2, y0 - t2, x1 + t2, y1 + t2, col);
+        });
+      },
+      finish() {
+        for (let i = 0; i < img.length; i += 4) {
+          img[i] = overlay[i] * 0.42 + img[i] * 0.58; img[i + 1] = overlay[i + 1] * 0.42 + img[i + 1] * 0.58; img[i + 2] = overlay[i + 2] * 0.42 + img[i + 2] * 0.58;
+        }
+        for (const s of strokes) s();
+      }
+    };
+  }
+
+  function uniformRadius(map) {
+    const radii = [];
+    for (const r of map.regions) for (const g of r.groups) for (const c of g.cells) radii.push(c.r);
+    if (!radii.length) return 8;
+    radii.sort((a, b) => a - b);
+    return Math.max(3, Math.round(radii[radii.length >> 1] * 1.05));
+  }
+
+  function findCell(cells, value) {
+    const G = H.grading;
+    const tf = G.normalizeTFChar(value);
+    for (const c of cells) {
+      if (c.label.length !== 1) continue;
+      if (c.label.toUpperCase() === String(value).toUpperCase()) return c;
+      if (tf && G.normalizeTFChar(c.label) === tf && !/\d/.test(value)) return c;
+    }
+    return null;
+  }
+
+  function fillThreshold(questions) {
+    const all = [];
+    for (const q of questions) for (const f of q.fills) all.push(f);
+    if (all.length < 10) return 0.35;
+    all.sort((a, b) => a - b);
+    const blank = all[all.length >> 1], filled = all[Math.min(all.length - 1, Math.round(all.length * 0.97))];
+    return clamp(blank + (filled - blank) * 0.5, 0.2, 0.6);
+  }
+
+  function markedCells(groups, fills, thr) {
+    const cells = [];
+    for (const g of groups) for (const c of g.cells) cells.push(c);
+    const out = [];
+    for (let i = 0; i < cells.length && i < fills.length; i++) if (fills[i] >= thr) out.push(cells[i]);
+    return out;
+  }
+
+  function subItemOutcome(student, key) {
+    const G = H.grading;
+    const s = G.normalizeTFChar(student), k = key ? G.normalizeTFChar(key) : null;
+    if (student === BLANK || student === ' ') return 'blank';
+    if (!s) return 'multiple';
+    return s === k ? 'correct' : 'incorrect';
+  }
+
+  /**
+   * Vẽ kết quả lên ảnh đã nắn. Mọi vòng tròn dùng chung một bán kính (đều nhau).
+   * Phần III chỉ tô các ô thí sinh đã tô theo màu kết quả cả câu, không khung, không ghi đáp án.
+   * @returns {Uint8ClampedArray} RGBA W×H
+   */
+  function renderGraded(result, grading) {
+    const W = result.warped.w, Hh = result.warped.h, map = result.map;
+    const img = new Uint8ClampedArray(result.warped.rgba);
+    const p = makePainter(img, W, Hh, uniformRadius(map));
+    const answers = new Map(result.questions.map(q => [q.part * 10000 + q.q, q]));
+    const details = new Map((grading ? grading.details : []).map(d => [d.part * 10000 + d.q, d]));
+    const thr = fillThreshold(result.questions);
+    const graded = !!grading;
+    const problem = (cells, marked, correct) => {
+      p.frame(cells, COLORS.problem, true);
+      for (const c of marked) p.fill(c, COLORS.problem);
+      if (correct) p.ring(correct, COLORS.correct);
+    };
+    const drawChoice = (cells, student, key, marked, outcome) => {
+      const chosen = findCell(cells, student), correct = key ? findCell(cells, key) : null;
+      if (outcome == null) {
+        if (chosen) p.fill(chosen, COLORS.detected);
+        else if (student === MULTI || student === UNCLEAR) problem(cells, marked, null);
+      } else if (outcome === 'correct') { if (chosen) p.fill(chosen, COLORS.correct); }
+      else if (outcome === 'incorrect' || outcome === 'partial') {
+        if (chosen) p.fill(chosen, COLORS.wrong); else p.frame(cells, COLORS.wrong, false);
+        if (correct) p.ring(correct, COLORS.correct);
+      } else if (outcome === 'blank') {
+        p.frame(cells, COLORS.wrong, false);
+        if (correct) p.ring(correct, COLORS.correct);
+      } else problem(cells, marked, correct);
+    };
+
+    for (const reg of map.regions) {
+      const kind = reg.region.kind;
+      if (kind === 'CandidateNumber' || kind === 'ExamCode') {
+        const field = kind === 'CandidateNumber' ? result.candidateNumber : result.examCode;
+        const value = field ? field.value : '';
+        const cols = reg.groups.filter(g => g.kind === 'digit').sort((a, b) => a.pos - b.pos);
+        for (let i = 0; i < cols.length && i < value.length; i++) {
+          if (/\d/.test(value[i])) { const c = findCell(cols[i].cells, value[i]); if (c) p.fill(c, COLORS.detected); }
+        }
+        continue;
+      }
+      const byQ = new Map();
+      for (const g of reg.groups) {
+        if (g.kind === 'digit') continue;
+        const key = g.part * 10000 + g.q;
+        if (!byQ.has(key)) byQ.set(key, []);
+        byQ.get(key).push(g);
+      }
+      for (const [key, groupsRaw] of byQ) {
+        const groups = groupsRaw.sort((a, b) => a.pos - b.pos);
+        const answer = answers.get(key), detail = details.get(key);
+        if (graded && !detail) continue;
+        if (!answer && !detail) continue;
+        const fills = answer ? answer.fills : [];
+        const student = answer ? answer.value : '';
+        if (groups[0].kind === 'choice') {
+          const s = student.length === 1 ? student[0] : student.length === 0 ? BLANK : MULTI;
+          drawChoice(groups[0].cells, s, detail && detail.correct ? detail.correct[0] : null, markedCells(groups, fills, thr), detail ? detail.outcome : null);
+        } else if (groups[0].kind === 'tf') {
+          const k = detail ? detail.correct || '' : '';
+          let off = 0;
+          for (let i = 0; i < groups.length; i++) {
+            const s = i < student.length ? student[i] : BLANK;
+            const kc = i < k.length ? k[i] : null;
+            const marked = markedCells([groups[i]], fills.slice(off), thr);
+            off += groups[i].cells.length;
+            drawChoice(groups[i].cells, s, kc, marked, detail ? subItemOutcome(s, kc) : null);
+          }
+        } else {
+          const marked = markedCells(groups, fills, thr);
+          if (!marked.length) continue;
+          const o = detail ? detail.outcome : null;
+          const col = o == null ? COLORS.detected : o === 'correct' ? COLORS.correct
+            : (o === 'incorrect' || o === 'blank' || o === 'partial') ? COLORS.wrong : COLORS.problem;
+          for (const c of marked) p.fill(c, col);
+        }
+      }
+    }
+    p.finish();
+    return img;
+  }
+
+  H.omr = {
+    OPTIONS, COLORS, ISSUE, BLANK, MULTI, UNCLEAR,
+    parseTemplate, checkTemplate, describeTemplate, questionCount, getGroups, groupSize,
+    canvasSize, buildMap, rgbaToGray, downscaleRGBA, recognize, renderGraded,
+    // phục vụ kiểm thử
+    _internal: { perspective4, homographyLS, apply, invert, multiply, labelComponents, otsu, minAreaRect, detectMarks, adaptiveThresholdInv, blur5 }
+  };
+  if (typeof module !== 'undefined' && module.exports) module.exports = H;
+})();
+
+;
+/*
+ * Hamariff – đọc/ghi Excel (.xlsx) tối giản, không cần thư viện ngoài.
+ * Đọc: giải nén ZIP (inflate thuần JS) + phân tích XML các trang tính thành lưới ô {text, number}.
+ * Ghi: tạo .xlsx một trang tính (ZIP không nén) để xuất bảng điểm.
+ */
+(function () {
+  'use strict';
+  const H = globalThis.Hamariff || (globalThis.Hamariff = {});
+
+  // ======================================================================= Inflate (RFC 1951)
+
+  const LBASE = [3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31, 35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258];
+  const LEXT = [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0];
+  const DBASE = [1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193, 257, 385, 513, 769, 1025, 1537, 2049, 3073, 4097, 6145, 8193, 12289, 16385, 24577];
+  const DEXT = [0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13];
+  const CLORDER = [16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15];
+
+  function inflateRaw(data, sizeHint) {
+    let pos = 0, bitbuf = 0, bitcnt = 0;
+    let out = new Uint8Array(Math.max(1024, sizeHint || data.length * 4)), outLen = 0;
+    const ensure = n => {
+      if (outLen + n <= out.length) return;
+      let size = out.length * 2;
+      while (size < outLen + n) size *= 2;
+      const o = new Uint8Array(size); o.set(out.subarray(0, outLen)); out = o;
+    };
+    const bits = n => {
+      while (bitcnt < n) {
+        if (pos >= data.length) throw new Error('Tệp nén bị cụt.');
+        bitbuf |= data[pos++] << bitcnt; bitcnt += 8;
+      }
+      const v = bitbuf & ((1 << n) - 1);
+      bitbuf >>>= n; bitcnt -= n;
+      return v;
+    };
+    const build = (lengths, n) => {
+      const count = new Uint16Array(16), offs = new Uint16Array(16), sym = new Uint16Array(n);
+      for (let i = 0; i < n; i++) count[lengths[i]]++;
+      count[0] = 0;
+      for (let len = 1; len < 15; len++) offs[len + 1] = offs[len] + count[len];
+      for (let i = 0; i < n; i++) if (lengths[i]) sym[offs[lengths[i]]++] = i;
+      return { count, sym };
+    };
+    const decode = h => {
+      let code = 0, first = 0, index = 0;
+      for (let len = 1; len <= 15; len++) {
+        code |= bits(1);
+        const c = h.count[len];
+        if (code - c < first) return h.sym[index + (code - first)];
+        index += c; first += c; first <<= 1; code <<= 1;
+      }
+      throw new Error('Dữ liệu nén không hợp lệ.');
+    };
+    const codes = (lit, dist) => {
+      for (;;) {
+        let sym = decode(lit);
+        if (sym < 256) { ensure(1); out[outLen++] = sym; continue; }
+        if (sym === 256) return;
+        sym -= 257;
+        if (sym >= 29) throw new Error('Dữ liệu nén không hợp lệ.');
+        const len = LBASE[sym] + bits(LEXT[sym]);
+        const ds = decode(dist);
+        if (ds >= 30) throw new Error('Dữ liệu nén không hợp lệ.');
+        const d = DBASE[ds] + bits(DEXT[ds]);
+        if (d > outLen) throw new Error('Dữ liệu nén không hợp lệ.');
+        ensure(len);
+        for (let i = 0; i < len; i++) { out[outLen] = out[outLen - d]; outLen++; }
+      }
+    };
+    let fixedLit = null, fixedDist = null;
+    let last = 0;
+    do {
+      last = bits(1);
+      const type = bits(2);
+      if (type === 0) {
+        bitbuf = 0; bitcnt = 0;
+        if (pos + 4 > data.length) throw new Error('Tệp nén bị cụt.');
+        const len = data[pos] | (data[pos + 1] << 8);
+        pos += 4;
+        if (pos + len > data.length) throw new Error('Tệp nén bị cụt.');
+        ensure(len); out.set(data.subarray(pos, pos + len), outLen); outLen += len; pos += len;
+      } else if (type === 1) {
+        if (!fixedLit) {
+          const l = new Uint8Array(288);
+          for (let i = 0; i < 144; i++) l[i] = 8; for (let i = 144; i < 256; i++) l[i] = 9;
+          for (let i = 256; i < 280; i++) l[i] = 7; for (let i = 280; i < 288; i++) l[i] = 8;
+          fixedLit = build(l, 288); fixedDist = build(new Uint8Array(30).fill(5), 30);
+        }
+        codes(fixedLit, fixedDist);
+      } else if (type === 2) {
+        const nlen = bits(5) + 257, ndist = bits(5) + 1, ncode = bits(4) + 4;
+        const cl = new Uint8Array(19);
+        for (let i = 0; i < ncode; i++) cl[CLORDER[i]] = bits(3);
+        const clh = build(cl, 19);
+        const lengths = new Uint8Array(nlen + ndist);
+        for (let i = 0; i < nlen + ndist;) {
+          const sym = decode(clh);
+          if (sym < 16) lengths[i++] = sym;
+          else {
+            let len = 0, rep;
+            if (sym === 16) { if (!i) throw new Error('Dữ liệu nén không hợp lệ.'); len = lengths[i - 1]; rep = 3 + bits(2); }
+            else if (sym === 17) rep = 3 + bits(3);
+            else rep = 11 + bits(7);
+            if (i + rep > nlen + ndist) throw new Error('Dữ liệu nén không hợp lệ.');
+            while (rep--) lengths[i++] = len;
+          }
+        }
+        codes(build(lengths.subarray(0, nlen), nlen), build(lengths.subarray(nlen), ndist));
+      } else throw new Error('Dữ liệu nén không hợp lệ.');
+    } while (!last);
+    return out.subarray(0, outLen);
+  }
+
+  // ======================================================================= ZIP
+
+  const u16 = (b, o) => b[o] | (b[o + 1] << 8);
+  const u32 = (b, o) => (b[o] | (b[o + 1] << 8) | (b[o + 2] << 16) | (b[o + 3] << 24)) >>> 0;
+  const utf8 = new TextDecoder('utf-8');
+
+  /** Danh sách tệp trong ZIP: {name → () => Uint8Array}. */
+  function unzip(bytes) {
+    const b = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+    let eocd = -1;
+    for (let i = b.length - 22; i >= Math.max(0, b.length - 65557); i--) if (u32(b, i) === 0x06054b50) { eocd = i; break; }
+    if (eocd < 0) throw new Error('Tệp không phải Excel .xlsx (không đọc được cấu trúc ZIP). Hãy lưu lại file dưới dạng "Excel Workbook (*.xlsx)".');
+    const n = u16(b, eocd + 10);
+    let p = u32(b, eocd + 16);
+    const files = {};
+    for (let k = 0; k < n; k++) {
+      if (u32(b, p) !== 0x02014b50) break;
+      const method = u16(b, p + 10), csize = u32(b, p + 20), usize = u32(b, p + 24);
+      const nl = u16(b, p + 28), el = u16(b, p + 30), cl = u16(b, p + 32), off = u32(b, p + 42);
+      const name = utf8.decode(b.subarray(p + 46, p + 46 + nl));
+      p += 46 + nl + el + cl;
+      files[name] = () => {
+        const start = off + 30 + u16(b, off + 26) + u16(b, off + 28);
+        const raw = b.subarray(start, start + csize);
+        if (method === 0) return raw;
+        if (method === 8) return inflateRaw(raw, usize);
+        throw new Error('Kiểu nén ZIP không hỗ trợ: ' + method);
+      };
+    }
+    return files;
+  }
+
+  // ======================================================================= Đọc .xlsx
+
+  function decodeXml(s) {
+    return s.replace(/&(#x[0-9a-f]+|#\d+|amp|lt|gt|quot|apos);/gi, (m, e) => {
+      const l = e.toLowerCase();
+      if (l === 'amp') return '&'; if (l === 'lt') return '<'; if (l === 'gt') return '>'; if (l === 'quot') return '"'; if (l === 'apos') return "'";
+      const code = l[1] === 'x' ? parseInt(l.slice(2), 16) : parseInt(l.slice(1), 10);
+      return Number.isFinite(code) ? String.fromCodePoint(code) : m;
+    });
+  }
+  function attrs(s) {
+    const o = {};
+    s.replace(/([\w:.-]+)\s*=\s*"([^"]*)"/g, (_, k, v) => { o[k] = decodeXml(v); o[k.replace(/^.*:/, '')] = o[k.replace(/^.*:/, '')] ?? decodeXml(v); return ''; });
+    return o;
+  }
+  function textOf(xml) {
+    let t = '';
+    xml.replace(/<rPh\b[\s\S]*?<\/rPh>/g, '').replace(/<t\b[^>]*>([\s\S]*?)<\/t>/g, (_, v) => { t += decodeXml(v); return ''; });
+    return t;
+  }
+  function colNumber(letters) {
+    let n = 0;
+    for (const ch of letters.toUpperCase()) n = n * 26 + (ch.charCodeAt(0) - 64);
+    return n;
+  }
+  function resolvePath(target) {
+    if (target.startsWith('/')) return target.slice(1);
+    const parts = ('xl/' + target).split('/'), out = [];
+    for (const p of parts) { if (p === '..') out.pop(); else if (p && p !== '.') out.push(p); }
+    return out.join('/');
+  }
+
+  /**
+   * Đọc mọi trang tính thành lưới: [{name, firstRow, firstColumn, cells: RawCell[][]}], RawCell = {text?:string, number?:number}.
+   */
+  function readXlsx(bytes) {
+    const files = unzip(bytes);
+    // Bỏ tiền tố namespace của thẻ (<x:sheet> → <sheet>) – một số phần mềm (ClosedXML, Open XML SDK) ghi kiểu này.
+    const read = name => {
+      const f = files[name] || files[Object.keys(files).find(k => k.toLowerCase() === name.toLowerCase())];
+      return f ? utf8.decode(f()).replace(/<(\/?)[A-Za-z_][\w.-]*:/g, '<$1') : null;
+    };
+    const wb = read('xl/workbook.xml');
+    if (!wb) throw new Error('Tệp không phải Excel .xlsx (thiếu xl/workbook.xml).');
+    const rels = {};
+    (read('xl/_rels/workbook.xml.rels') || '').replace(/<Relationship\b([^>]*)\/?>/g, (_, a) => { const o = attrs(a); rels[o.Id] = o.Target; return ''; });
+    const shared = [];
+    const ss = read('xl/sharedStrings.xml');
+    if (ss) ss.replace(/<si\b[^>]*>([\s\S]*?)<\/si>|<si\b[^>]*\/>/g, (_, inner) => { shared.push(inner ? textOf(inner) : ''); return ''; });
+    const sheets = [];
+    wb.replace(/<sheet\b([^>]*)\/?>/g, (_, a) => { const o = attrs(a); sheets.push({ name: o.name || `Sheet${sheets.length + 1}`, target: rels[o['r:id']] || rels.id }); return ''; });
+    const grids = [];
+    sheets.forEach((sh, idx) => {
+      const xml = sh.target ? read(resolvePath(sh.target)) : read(`xl/worksheets/sheet${idx + 1}.xml`);
+      if (!xml) return;
+      const cells = [];
+      let minR = Infinity, minC = Infinity, maxR = 0, maxC = 0, rowAuto = 0;
+      const data = (xml.match(/<sheetData\b[^>]*>([\s\S]*?)<\/sheetData>/) || [])[1] || '';
+      data.replace(/<row\b([^>]*?)(?:\/>|>([\s\S]*?)<\/row>)/g, (_, ra, inner) => {
+        const rAttr = attrs(ra);
+        const r = rAttr.r ? parseInt(rAttr.r, 10) : rowAuto + 1;
+        rowAuto = r;
+        let colAuto = 0;
+        (inner || '').replace(/<c\b([^>]*?)(?:\/>|>([\s\S]*?)<\/c>)/g, (__, ca, ci) => {
+          const a = attrs(ca);
+          let c = colAuto + 1;
+          if (a.r) { const m = /^([A-Z]+)(\d+)$/i.exec(a.r); if (m) c = colNumber(m[1]); }
+          colAuto = c;
+          if (!ci) return '';
+          const v = (/<v\b[^>]*>([\s\S]*?)<\/v>/.exec(ci) || [])[1];
+          const t = a.t || 'n';
+          let cell = null;
+          if (t === 's') { const s = shared[parseInt(v, 10)]; if (s != null && s !== '') cell = { text: s }; }
+          else if (t === 'inlineStr') { const s = textOf((/<is\b[^>]*>([\s\S]*?)<\/is>/.exec(ci) || [])[1] || ''); if (s) cell = { text: s }; }
+          else if (t === 'str' || t === 'e' || t === 'd') { if (v != null && v !== '') cell = { text: decodeXml(v) }; }
+          else if (t === 'b') { if (v != null) cell = { text: v === '1' ? 'TRUE' : 'FALSE' }; }
+          else if (v != null && v !== '') { const nnum = Number(v); cell = Number.isFinite(nnum) ? { number: nnum } : { text: decodeXml(v) }; }
+          if (!cell || (cell.text != null && !cell.text.trim())) return '';
+          cells.push([r, c, cell]);
+          if (r < minR) minR = r; if (c < minC) minC = c; if (r > maxR) maxR = r; if (c > maxC) maxC = c;
+          return '';
+        });
+        return '';
+      });
+      if (!cells.length) { grids.push({ name: sh.name, firstRow: 1, firstColumn: 1, cells: [] }); return; }
+      const rows = [];
+      for (let r = 0; r <= maxR - minR; r++) rows.push([]);
+      for (const [r, c, cell] of cells) rows[r - minR][c - minC] = cell;
+      grids.push({ name: sh.name, firstRow: minR, firstColumn: minC, cells: rows });
+    });
+    return grids;
+  }
+
+  // ======================================================================= Ghi .xlsx
+
+  let crcTable = null;
+  function crc32(b) {
+    if (!crcTable) {
+      crcTable = new Uint32Array(256);
+      for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; crcTable[n] = c >>> 0; }
+    }
+    let c = 0xFFFFFFFF;
+    for (let i = 0; i < b.length; i++) c = crcTable[(c ^ b[i]) & 0xFF] ^ (c >>> 8);
+    return (c ^ 0xFFFFFFFF) >>> 0;
+  }
+
+  function zipStore(entries) {
+    const enc = new TextEncoder();
+    const parts = [], central = [];
+    let offset = 0;
+    const w16 = (a, o, v) => { a[o] = v & 0xFF; a[o + 1] = (v >>> 8) & 0xFF; };
+    const w32 = (a, o, v) => { a[o] = v & 0xFF; a[o + 1] = (v >>> 8) & 0xFF; a[o + 2] = (v >>> 16) & 0xFF; a[o + 3] = (v >>> 24) & 0xFF; };
+    for (const [name, content] of entries) {
+      const nb = enc.encode(name), data = typeof content === 'string' ? enc.encode(content) : content;
+      const crc = crc32(data);
+      const lh = new Uint8Array(30 + nb.length);
+      w32(lh, 0, 0x04034b50); w16(lh, 4, 20); w16(lh, 6, 0x0800); w16(lh, 8, 0); w16(lh, 10, 0); w16(lh, 12, 0x21);
+      w32(lh, 14, crc); w32(lh, 18, data.length); w32(lh, 22, data.length); w16(lh, 26, nb.length); w16(lh, 28, 0);
+      lh.set(nb, 30);
+      const ch = new Uint8Array(46 + nb.length);
+      w32(ch, 0, 0x02014b50); w16(ch, 4, 20); w16(ch, 6, 20); w16(ch, 8, 0x0800); w16(ch, 10, 0); w16(ch, 12, 0); w16(ch, 14, 0x21);
+      w32(ch, 16, crc); w32(ch, 20, data.length); w32(ch, 24, data.length); w16(ch, 28, nb.length);
+      w32(ch, 42, offset); ch.set(nb, 46);
+      parts.push(lh, data); central.push(ch);
+      offset += lh.length + data.length;
+    }
+    const cdSize = central.reduce((s, c) => s + c.length, 0);
+    const end = new Uint8Array(22);
+    w32(end, 0, 0x06054b50); w16(end, 8, entries.length); w16(end, 10, entries.length); w32(end, 12, cdSize); w32(end, 16, offset);
+    const all = parts.concat(central, [end]);
+    const out = new Uint8Array(all.reduce((s, p) => s + p.length, 0));
+    let o = 0;
+    for (const p of all) { out.set(p, o); o += p.length; }
+    return out;
+  }
+
+  const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '');
+  function colLetter(n) { let s = ''; while (n > 0) { const r = (n - 1) % 26; s = String.fromCharCode(65 + r) + s; n = Math.floor((n - 1) / 26); } return s; }
+
+  /**
+   * Tạo tệp .xlsx một trang tính.
+   * @param {string} sheetName
+   * @param {Array<Array<string|number|null>>} rows hàng đầu là tiêu đề (in đậm)
+   * @param {number[]} widths độ rộng cột (ký tự)
+   */
+  function writeXlsx(sheetName, rows, widths) {
+    const name = esc(String(sheetName || 'KetQua').replace(/[\\/?*[\]:]/g, ' ').slice(0, 31));
+    let sheet = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>';
+    if (widths && widths.length) sheet += '<cols>' + widths.map((w, i) => `<col min="${i + 1}" max="${i + 1}" width="${w}" customWidth="1"/>`).join('') + '</cols>';
+    sheet += '<sheetData>';
+    rows.forEach((row, ri) => {
+      sheet += `<row r="${ri + 1}">`;
+      row.forEach((v, ci) => {
+        if (v == null || v === '') return;
+        const ref = colLetter(ci + 1) + (ri + 1), s = ri === 0 ? ' s="1"' : (typeof v === 'number' ? ' s="2"' : '');
+        if (typeof v === 'number' && Number.isFinite(v)) sheet += `<c r="${ref}"${s}><v>${v}</v></c>`;
+        else sheet += `<c r="${ref}"${s} t="inlineStr"><is><t xml:space="preserve">${esc(v)}</t></is></c>`;
+      });
+      sheet += '</row>';
+    });
+    sheet += '</sheetData></worksheet>';
+    const styles = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
+      '<numFmts count="1"><numFmt numFmtId="164" formatCode="0.00"/></numFmts>' +
+      '<fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts>' +
+      '<fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFFCE4EC"/><bgColor indexed="64"/></patternFill></fill></fills>' +
+      '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>' +
+      '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>' +
+      '<cellXfs count="3"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/></cellXfs>' +
+      '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+    return zipStore([
+      ['[Content_Types].xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>'],
+      ['_rels/.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'],
+      ['xl/workbook.xml', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="${name}" sheetId="1" r:id="rId1"/></sheets></workbook>`],
+      ['xl/_rels/workbook.xml.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'],
+      ['xl/worksheets/sheet1.xml', sheet],
+      ['xl/styles.xml', styles]
+    ]);
+  }
+
+  H.xlsx = { inflateRaw, unzip, readXlsx, writeXlsx, colLetter, crc32 };
+  if (typeof module !== 'undefined' && module.exports) module.exports = H;
+})();
+
+;
+/*
+ * Hamariff – tự nhận diện bảng đáp án nhiều mã đề trong file Excel (cổng từ AnswerKeyWorkbookReader của bản Windows).
+ * Dò mọi trang tính, cả hai chiều (mã đề theo cột hoặc theo hàng), tìm hàng tiêu đề chứa các mã đề;
+ * dạng câu nhận theo giá trị: A–D → Phần I, ĐĐSS → Phần II, số → Phần III. Cột "Điểm" (nếu có) ghi đè điểm mặc định.
+ */
+(function () {
+  'use strict';
+  const H = globalThis.Hamariff || (globalThis.Hamariff = {});
+  const G = () => H.grading;
+
+  const MAX_HEADER_SEARCH = 25, MAX_SCORED_ROWS = 300, MAX_COLUMNS = 400, LABEL_HINT_WEIGHT = 300, SEQUENCE_PENALTY = 1000;
+  const EMPTY = {};
+
+  const isEmpty = c => !c || (c.number == null && !(c.text && c.text.trim()));
+  const display = c => !c ? '' : c.number != null ? String(c.number) : (c.text || '').trim();
+  const at = (grid, r, c) => (grid.cells[r] && grid.cells[r][c]) || EMPTY;
+  const colCount = grid => grid.cells.reduce((m, r) => Math.max(m, r ? r.length : 0), 0);
+
+  function fold(text) {
+    if (!text || !String(text).trim()) return '';
+    return String(text).trim().toLowerCase().replace(/đ/g, 'd').normalize('NFD').replace(/[̀-ͯ]/g, '').split(/\s+/).filter(Boolean).join(' ');
+  }
+
+  const EXAM_CODE = /^(?:(?:m[ãa]\s*đ[ềe]|ma\s*de|m[ãa]|đ[ềe]|de|m[đd])\s*[:#.\-]?\s*)?(\d{1,10})$/iu;
+
+  function tryReadExamCode(cell) {
+    if (cell.number != null) {
+      const n = cell.number;
+      if (n < 0 || n !== Math.floor(n) || n >= 1e10) return null;
+      return String(n);
+    }
+    const t = (cell.text || '').trim().normalize('NFC');
+    if (!t) return null;
+    const m = EXAM_CODE.exec(t);
+    return m ? m[1] : null;
+  }
+
+  function isScoreHeader(text) {
+    const t = String(text || '').trim().normalize('NFC').toLowerCase();
+    return t.startsWith('điểm') || t.startsWith('diem') || t === 'score' || t === 'thang điểm' || t === 'thang diem';
+  }
+
+  function looksLikeQuestionLabel(cell) {
+    return cell.number != null || (!!cell.text && /\d/.test(cell.text) && cell.text.trim().length <= 12);
+  }
+
+  /** Dạng câu theo giá trị ô: 'choice' | 'tf' | 'short' | null. */
+  function detectType(cell, n) {
+    if (cell.number != null) return 'short';
+    const t = (cell.text || '').trim();
+    if (!t) return null;
+    if (t.length === 1 && /\p{L}/u.test(t) && 'ABCDEFGH'.includes(t.toUpperCase())) return 'choice';
+    if (t.length > 1 && G().normalizeTFKey(t, n) && !/\d/.test(t)) return 'tf';
+    return /^-?\d*([.,]\d+)?$/.test(t.replace(/ /g, '')) && /\d/.test(t) ? 'short' : null;
+  }
+
+  function columnLetter(n) { let s = ''; while (n > 0) { const r = (n - 1) % 26; s = String.fromCharCode(65 + r) + s; n = Math.floor((n - 1) / 26); } return s; }
+
+  function makeView(grid, transposed) {
+    const rows = transposed ? colCount(grid) : grid.cells.length;
+    const cols = Math.min(MAX_COLUMNS, transposed ? grid.cells.length : colCount(grid));
+    return {
+      grid, transposed, rows, cols,
+      at: (r, c) => (transposed ? at(grid, c, r) : at(grid, r, c)),
+      lineName: r => (transposed ? `Cột ${columnLetter(grid.firstColumn + r)}` : `Hàng ${grid.firstRow + r}`),
+      crossName: c => (transposed ? `hàng ${grid.firstRow + c}` : `cột ${columnLetter(grid.firstColumn + c)}`)
+    };
+  }
+
+  function labelHint(text) {
+    const t = fold(text);
+    if (!t) return 0;
+    const q = t.includes('cau') || t.includes('stt') || t.includes('question');
+    const c = t.includes('ma de') || t.includes('made') || t.startsWith('ma') || t.startsWith('de') || t.includes('code');
+    return q === c ? 0 : q ? 1 : -1;
+  }
+
+  function isOneToN(codes) {
+    if (codes.length < 3) return false;
+    return codes.every((c, i) => /^\d+$/.test(c) && parseInt(c, 10) === i + 1);
+  }
+
+  function labelColumnIsSequence(view, h, labelIndex, last) {
+    if (labelIndex < 0) return false;
+    const nums = [];
+    for (let r = h + 1; r < last; r++) {
+      const cell = view.at(r, labelIndex);
+      if (isEmpty(cell)) continue;
+      if (cell.number != null && cell.number === Math.floor(cell.number)) nums.push(cell.number);
+      else { const d = display(cell).replace(/\D/g, ''); if (d.length > 0 && d.length < 6) nums.push(parseInt(d, 10)); }
+    }
+    if (nums.length < 2 || nums[0] !== 1) return false;
+    for (let i = 1; i < nums.length; i++) if (nums[i] !== nums[i - 1] + 1 && nums[i] !== 1) return false;
+    return true;
+  }
+
+  function evaluate(view, sheetIndex, h, n) {
+    const codes = [];
+    let scoreIndex = -1, firstContent = -1;
+    for (let c = 0; c < view.cols; c++) {
+      const cell = view.at(h, c);
+      if (isEmpty(cell)) continue;
+      if (firstContent < 0) firstContent = c;
+      if (cell.number == null && isScoreHeader(display(cell))) { if (scoreIndex < 0) scoreIndex = c; }
+      else { const code = tryReadExamCode(cell); if (code != null) codes.push({ index: c, code }); }
+    }
+    if (!codes.length) return null;
+    const firstCode = codes[0].index;
+    const labelIndex = firstContent >= 0 && firstContent < firstCode && firstContent !== scoreIndex ? firstContent : firstCode - 1;
+    let consistentRows = 0, good = 0, bad = 0;
+    const last = Math.min(view.rows, h + 1 + MAX_SCORED_ROWS);
+    for (let r = h + 1; r < last; r++) {
+      let nonEmpty = 0;
+      const types = new Set();
+      let invalid = false;
+      for (const { index } of codes) {
+        const cell = view.at(r, index);
+        if (isEmpty(cell)) continue;
+        nonEmpty++;
+        const t = detectType(cell, n);
+        if (!t) invalid = true; else types.add(t);
+      }
+      if (!nonEmpty) continue;
+      if (!invalid && types.size === 1) { consistentRows++; good += nonEmpty; } else bad += nonEmpty;
+    }
+    if (!consistentRows) return null;
+    const dup = codes.length - new Set(codes.map(c => c.code)).size;
+    let score = good - 2 * bad - 5 * dup;
+    if (labelIndex >= 0) {
+      const hint = labelHint(display(view.at(h, labelIndex)));
+      if (hint) score += (view.transposed ? -hint : hint) * LABEL_HINT_WEIGHT;
+    }
+    if (isOneToN(codes.map(c => c.code)) && !labelColumnIsSequence(view, h, labelIndex, last)) score -= SEQUENCE_PENALTY;
+    return { view, sheetIndex, h, labelIndex, codes, scoreIndex, score };
+  }
+
+  /** Phân tích bảng đã chuẩn hóa: header[0] = nhãn câu, header[1..] = mã đề (+ "Điểm"). */
+  function parseTable(header, rows, n, rowNames, shortMaxLength) {
+    const result = { examCodes: [], itemsByCode: {}, issues: [] };
+    const err = (msg, part, q) => result.issues.push({ severity: 'error', message: msg, part, q });
+    const warn = (msg, part, q) => result.issues.push({ severity: 'warning', message: msg, part, q });
+    let scoreColumn = -1;
+    const codeColumns = [];
+    for (let c = 1; c < header.length; c++) {
+      const text = display(header[c]);
+      if (!text) continue;
+      if (isScoreHeader(text)) { if (scoreColumn < 0) scoreColumn = c; continue; }
+      const code = tryReadExamCode(header[c]);
+      if (code == null) { warn(`Cột "${text}" không phải mã đề – đã bỏ qua.`); continue; }
+      if (codeColumns.some(x => x.code.toLowerCase() === code.toLowerCase())) { err(`Mã đề "${code}" bị trùng trong hàng tiêu đề.`); continue; }
+      codeColumns.push({ column: c, code });
+    }
+    if (!codeColumns.length) { err('Không tìm thấy cột mã đề nào trong hàng tiêu đề.'); return result; }
+    for (const { code } of codeColumns) { result.examCodes.push(code); result.itemsByCode[code] = []; }
+    const counters = { 1: 0, 2: 0, 3: 0 };
+    let lastPart = 0;
+    rows.forEach((row, r) => {
+      const name = rowNames && rowNames[r] ? rowNames[r] : `Hàng ${r + 2}`;
+      const ref = name.charAt(0).toLowerCase() + name.slice(1);
+      if (!row.length || row.every(isEmpty)) return;
+      const cells = codeColumns.map(cc => ({ code: cc.code, cell: row[cc.column] || EMPTY }));
+      const typed = cells.filter(x => !isEmpty(x.cell)).map(x => detectType(x.cell, n));
+      const types = [...new Set(typed)];
+      if (!types.length) {
+        if (looksLikeQuestionLabel(row[0] || EMPTY)) warn(`${name}: không có đáp án nào, đã bỏ qua.`);
+        return;
+      }
+      if (types.includes(null) || types.length > 1) {
+        const badCells = cells.filter(x => !isEmpty(x.cell) && !detectType(x.cell, n)).slice(0, 3).map(x => `${x.code} = "${display(x.cell)}"`);
+        err(`${name}: giá trị đáp án không hợp lệ hoặc không cùng dạng câu hỏi giữa các mã đề${badCells.length ? ` (${badCells.join(', ')}).` : '.'}`);
+        return;
+      }
+      const type = types[0];
+      const part = type === 'choice' ? 1 : type === 'tf' ? 2 : 3;
+      if (part < lastPart) warn(`${name}: câu Phần ${part} nằm sau câu Phần ${lastPart}. Thứ tự đánh số vẫn theo từng phần.`, part);
+      lastPart = Math.max(lastPart, part);
+      const q = ++counters[part];
+      let score = null, tfTable = null;
+      if (scoreColumn >= 0 && !isEmpty(row[scoreColumn])) {
+        const sc = row[scoreColumn];
+        if (type === 'tf') {
+          tfTable = G().parseTFTable(display(sc), n);
+          if (!tfTable) err(`${name}: thang điểm đúng/sai "${display(sc)}" không hợp lệ (vd "0.1 0.25 0.5 1").`, part, q);
+        } else {
+          const v = sc.number != null ? sc.number : Number(String(sc.text || '').trim().replace(',', '.'));
+          if (Number.isFinite(v) && v >= 0) score = v; else err(`${name}: điểm "${display(sc)}" không hợp lệ.`, part, q);
+        }
+      }
+      for (const { code, cell } of cells) {
+        if (isEmpty(cell)) { err(`Mã đề ${code}: chưa có đáp án (${ref}).`, part, q); continue; }
+        let value = null, error = null;
+        if (type === 'choice') { value = G().normalizeChoiceKey(display(cell)); if (!value) error = `đáp án "${display(cell)}" phải là A, B, C hoặc D`; }
+        else if (type === 'tf') { value = G().normalizeTFKey(display(cell), n); if (!value) error = `đáp án đúng/sai "${display(cell)}" phải gồm ${n} ký tự Đ/S`; }
+        else {
+          const text = cell.number != null ? G().shortFromNumber(cell.number) : display(cell);
+          const k = G().normalizeShortKey(text, { maxLength: shortMaxLength || 4 });
+          value = k.value; error = k.error;
+        }
+        if (!value) { err(`Mã đề ${code}: ${error} (${ref}).`, part, q); continue; }
+        const item = { part, q, type, answer: value };
+        if (score != null) item.score = score;
+        if (tfTable) item.tfTable = tfTable;
+        result.itemsByCode[code].push(item);
+      }
+    });
+    return result;
+  }
+
+  /**
+   * Tự nhận diện bảng đáp án trong các trang tính.
+   * @returns {{found:boolean, description:string, keys:Array<{code,items}>, issues:Array, notes:string[]}}
+   */
+  function detectAnswerKeys(grids, opts) {
+    opts = opts || {};
+    const n = opts.subItemCount || 4;
+    const perSheet = [];
+    grids.forEach((grid, s) => {
+      let best = null;
+      for (const transposed of [false, true]) {
+        const view = makeView(grid, transposed);
+        const maxHeader = Math.min(view.rows - 2, MAX_HEADER_SEARCH);
+        for (let h = 0; h <= maxHeader; h++) {
+          const c = evaluate(view, s, h, n);
+          if (c && (!best || c.score > best.score)) best = c;
+        }
+      }
+      if (best) perSheet.push(best);
+    });
+    if (!perSheet.length) {
+      return {
+        found: false, keys: [], notes: [], description: 'Không tìm thấy bảng đáp án.',
+        issues: [{ severity: 'error', message: 'Không tìm thấy bảng đáp án trong file. Cần một hàng tiêu đề chứa các mã đề (vd 0101, 2213, "Mã đề 008") và đáp án từng câu bên dưới: A–D cho Phần I, ĐĐSS cho Phần II, số cho Phần III.' }]
+      };
+    }
+    const notes = [];
+    let chosen = perSheet[0];
+    if (perSheet.length > 1) {
+      const names = perSheet.map(c => `"${c.view.grid.name}"`).join(', ');
+      chosen = perSheet.slice().sort((a, b) => b.score - a.score || a.sheetIndex - b.sheetIndex)[0];
+      notes.push(`File có ${perSheet.length} trang tính chứa đáp án (${names}); đã dùng trang "${chosen.view.grid.name}". Nếu cần trang khác, hãy tách thành file riêng.`);
+    }
+    const v = chosen.view;
+    const header = [chosen.labelIndex >= 0 ? v.at(chosen.h, chosen.labelIndex) : { text: 'Câu hỏi' }]
+      .concat(chosen.codes.map(x => ({ text: x.code })));
+    if (chosen.scoreIndex >= 0) header.push({ text: 'Điểm' });
+    const rows = [], names = [];
+    for (let r = chosen.h + 1; r < v.rows; r++) {
+      const row = [chosen.labelIndex >= 0 ? v.at(r, chosen.labelIndex) : EMPTY].concat(chosen.codes.map(x => v.at(r, x.index)));
+      if (chosen.scoreIndex >= 0) row.push(v.at(r, chosen.scoreIndex));
+      rows.push(row); names.push(v.lineName(r));
+    }
+    const table = parseTable(header, rows, n, names, opts.shortMaxLength);
+    const where = v.transposed ? `cột ${columnLetter(v.grid.firstColumn + chosen.h)}` : `hàng ${v.grid.firstRow + chosen.h}`;
+    const scoreAt = chosen.scoreIndex >= 0 ? v.crossName(chosen.scoreIndex) : null;
+    const description = `Trang tính "${v.grid.name}": mã đề ở ${where}, mỗi ${v.transposed ? 'cột bên phải' : 'hàng bên dưới'} là một câu` + (scoreAt ? `, điểm ở ${scoreAt}` : '') + '.';
+    if (table.examCodes.length > 1 && new Set(table.examCodes.map(c => c.length)).size > 1)
+      notes.push(`Mã đề có số chữ số khác nhau (${table.examCodes.join(', ')}). Nếu mã đề có số 0 ở đầu (vd 008) mà Excel lưu thành số (8), phần mềm vẫn khớp được với mã đề tô trên phiếu.`);
+    return {
+      found: true, description, notes, issues: table.issues,
+      keys: table.examCodes.map(code => ({ code, items: table.itemsByCode[code] }))
+    };
+  }
+
+  H.keys = { detectAnswerKeys, tryReadExamCode, detectType, isScoreHeader, fold };
+  if (typeof module !== 'undefined' && module.exports) module.exports = H;
+})();
+
+;
+/* Hamariff – Chấm thi bằng điện thoại: giao diện. Dùng lõi H.omr / H.grading / H.keys / H.xlsx. */
+(function () {
+  'use strict';
+  const H = globalThis.Hamariff;
+  const G = H.grading;
+
+  // ======================================================================= Tiện ích giao diện
+
+  const SV = 'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
+  const ICON = {
+    key: `<svg ${SV}><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.7 12.3 20 3M16 7l3 3M14 9l2 2"/></svg>`,
+    camera: `<svg ${SV}><path d="M3 8a2 2 0 0 1 2-2h2.5l1.5-2h6l1.5 2H19a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="4"/></svg>`,
+    image: `<svg ${SV}><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>`,
+    list: `<svg ${SV}><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>`,
+    upload: `<svg ${SV}><path d="M12 16V4M7 9l5-5 5 5"/><path d="M20 16v3a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-3"/></svg>`,
+    download: `<svg ${SV}><path d="M12 4v12M7 11l5 5 5-5"/><path d="M20 16v3a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-3"/></svg>`,
+    trash: `<svg ${SV}><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>`,
+    edit: `<svg ${SV}><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>`,
+    check: `<svg ${SV}><path d="M20 6 9 17l-5-5"/></svg>`,
+    alert: `<svg ${SV}><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>`,
+    info: `<svg ${SV}><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>`,
+    copy: `<svg ${SV}><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`,
+    file: `<svg ${SV}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>`,
+    sun: `<svg ${SV}><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>`,
+    frame: `<svg ${SV}><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><rect x="7" y="7" width="3" height="3" fill="currentColor"/><rect x="14" y="7" width="3" height="3" fill="currentColor"/><rect x="7" y="14" width="3" height="3" fill="currentColor"/><rect x="14" y="14" width="3" height="3" fill="currentColor"/></svg>`,
+    phone: `<svg ${SV}><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/></svg>`,
+    arrow: `<svg ${SV}><path d="M5 12h14M13 6l6 6-6 6"/></svg>`,
+    logo: `<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="m8 12 2.5 2.5L16 9"/></svg>`
+  };
+
+  function el(tag, props, ...kids) {
+    const e = document.createElement(tag);
+    if (props) for (const [k, v] of Object.entries(props)) {
+      if (v == null || v === false) continue;
+      if (k === 'class') e.className = v;
+      else if (k === 'html') e.innerHTML = v;
+      else if (k.startsWith('on') && typeof v === 'function') e.addEventListener(k.slice(2), v);
+      else if (k === 'style') e.style.cssText = v;
+      else if (k === 'value') e.value = v;
+      else e.setAttribute(k, v === true ? '' : v);
+    }
+    for (const k of kids.flat(Infinity)) {
+      if (k == null || k === false) continue;
+      e.append(k instanceof Node ? k : document.createTextNode(String(k)));
+    }
+    return e;
+  }
+  const icon = name => { const t = document.createElement('template'); t.innerHTML = ICON[name]; return t.content.firstChild; };
+  const fmt = n => (n == null || !Number.isFinite(n) ? '—' : (Math.round(n * 100) / 100).toLocaleString('vi-VN', { maximumFractionDigits: 2 }));
+  const ROMAN = { 1: 'I', 2: 'II', 3: 'III' };
+  const nextFrame = () => new Promise(r => requestAnimationFrame(() => setTimeout(r, 16)));
+  const withTimeout = (p, ms) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))]);
+  const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+
+  function toast(msg, ms) {
+    const t = el('div', { class: 'toast', role: 'status' }, msg);
+    document.body.append(t);
+    setTimeout(() => t.remove(), ms || 2600);
+  }
+
+  function modal(build) {
+    const box = el('div', { class: 'box', role: 'dialog', 'aria-modal': 'true' }, el('div', { class: 'grab' }));
+    const m = el('div', { class: 'modal' }, box);
+    const close = () => { m.remove(); document.removeEventListener('keydown', onKey); };
+    const onKey = e => { if (e.key === 'Escape') close(); };
+    m.addEventListener('click', e => { if (e.target === m) close(); });
+    document.addEventListener('keydown', onKey);
+    build(box, close);
+    document.body.append(m);
+    return close;
+  }
+
+  function confirmBox(title, message, okText, danger) {
+    return new Promise(resolve => {
+      modal((box, close) => {
+        const done = v => { close(); resolve(v); };
+        box.append(el('h3', null, title), el('p', { class: 'muted', style: 'margin:0 0 14px' }, message),
+          el('div', { class: 'row' },
+            el('button', { class: 'btn grow', onclick: () => done(false) }, 'Hủy'),
+            el('button', { class: `btn grow ${danger ? 'danger' : 'primary'}`, onclick: () => done(true) }, okText)));
+      });
+    });
+  }
+
+  function fileButton(text, accept, opts, onFiles, iconName, cls) {
+    const input = el('input', { type: 'file', accept: accept || null, multiple: opts && opts.multiple ? true : null, capture: opts && opts.capture ? 'environment' : null });
+    input.addEventListener('change', () => { const files = [...input.files]; input.value = ''; if (files.length) onFiles(files); });
+    return el('label', { class: cls || 'btn' }, iconName ? icon(iconName) : null, text, input);
+  }
+
+  function notice(kind, content, iconName) {
+    return el('div', { class: `notice ${kind}` }, icon(iconName || (kind === 'ok' ? 'check' : kind === 'info' ? 'info' : 'alert')), el('div', null, content));
+  }
+
+  // ======================================================================= Lưu trữ (tài khoản Claude nếu có, không thì trên máy)
+
+  const LS_CONFIG = 'hamariff.web.v1.config', LS_RESULTS = 'hamariff.web.v1.results';
+  const lsGet = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
+  const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch { return false; } };
+
+  const Store = {
+    mode: 'local', db: null, uid: null, queue: Promise.resolve(),
+    async connect() {
+      const c = globalThis.claude;
+      if (!c || typeof c.use !== 'function') return false;
+      try {
+        const [db, user] = await withTimeout(Promise.all([c.use('db'), c.use('user')]), 12000);
+        const uid = user ? await withTimeout(user.id(), 6000) : null;
+        if (!db || !uid) return false;
+        this.db = db; this.uid = uid; this.mode = 'cloud';
+        return true;
+      } catch { return false; }
+    },
+    configRef() { return this.db.doc(`data/users/${this.uid}/config`); },
+    resultsRef() { return this.db.doc(`data/users/${this.uid}/results`).collection('items'); },
+    serial(fn) { const p = this.queue.then(fn, fn); this.queue = p.catch(() => {}); return p; },
+    async loadCloud() {
+      const snap = await withTimeout(this.configRef().get(), 12000);
+      const cfg = snap.exists ? snap.data() : null;
+      const rs = await withTimeout(this.resultsRef().limit(1000).get(), 15000);
+      return { config: cfg, results: rs.docs.map(d => fromCloud(d.data())).filter(Boolean) };
+    },
+    saveConfig(cfg) {
+      lsSet(LS_CONFIG, cfg);
+      if (this.mode !== 'cloud') return Promise.resolve();
+      return this.serial(() => this.configRef().set(JSON.parse(JSON.stringify(cfg)))).catch(e => this.fail(e));
+    },
+    saveResult(rec) {
+      lsSet(LS_RESULTS, state.results);
+      if (this.mode !== 'cloud') return Promise.resolve();
+      return this.serial(() => this.resultsRef().doc(rec.id).set(toCloud(rec))).catch(e => this.fail(e));
+    },
+    deleteResult(id) {
+      lsSet(LS_RESULTS, state.results);
+      if (this.mode !== 'cloud') return Promise.resolve();
+      return this.serial(() => this.resultsRef().doc(id).delete()).catch(e => this.fail(e));
+    },
+    fail(e) {
+      const code = e && e.code;
+      if (code === 'quota_exceeded') toast('Bộ nhớ trên tài khoản đã đầy – hãy xuất Excel rồi xóa bớt kết quả cũ.', 5000);
+      else if (code === 'invalid_argument' || code === 'revoked' || code === 'not_granted') { this.mode = 'local'; renderTop(); toast('Không lưu được lên tài khoản – đang lưu trên máy này.', 4000); }
+    }
+  };
+
+  // Kho tài liệu không nhận mảng lồng mảng: lưu answers/details dạng chuỗi JSON.
+  function toCloud(rec) {
+    const o = JSON.parse(JSON.stringify(rec));
+    o.answers = JSON.stringify(rec.answers || []);
+    o.details = JSON.stringify(rec.details || []);
+    return o;
+  }
+  function fromCloud(o) {
+    if (!o || !o.id) return null;
+    const r = Object.assign({}, o);
+    try { if (typeof r.answers === 'string') r.answers = JSON.parse(r.answers); if (typeof r.details === 'string') r.details = JSON.parse(r.details); } catch { return null; }
+    return Array.isArray(r.answers) ? r : null;
+  }
+
+  /** Ảnh bài đã chấm: giữ trong phiên + IndexedDB trên máy (nếu trình duyệt cho phép). */
+  const Img = {
+    urls: new Map(), dbp: null,
+    open() {
+      if (!this.dbp) this.dbp = new Promise(res => {
+        try {
+          const r = indexedDB.open('hamariff-web', 1);
+          r.onupgradeneeded = () => r.result.createObjectStore('img');
+          r.onsuccess = () => res(r.result); r.onerror = () => res(null); r.onblocked = () => res(null);
+        } catch { res(null); }
+      });
+      return this.dbp;
+    },
+    async put(id, blob) {
+      if (this.urls.has(id)) URL.revokeObjectURL(this.urls.get(id));
+      this.urls.set(id, URL.createObjectURL(blob));
+      const db = await this.open();
+      if (db) try { db.transaction('img', 'readwrite').objectStore('img').put(blob, id); } catch { /* bỏ qua */ }
+    },
+    async get(id) {
+      if (this.urls.has(id)) return this.urls.get(id);
+      const db = await this.open();
+      if (!db) return null;
+      return new Promise(res => {
+        try {
+          const rq = db.transaction('img').objectStore('img').get(id);
+          rq.onsuccess = () => { if (rq.result) { const u = URL.createObjectURL(rq.result); this.urls.set(id, u); res(u); } else res(null); };
+          rq.onerror = () => res(null);
+        } catch { res(null); }
+      });
+    },
+    async del(id) {
+      if (this.urls.has(id)) { URL.revokeObjectURL(this.urls.get(id)); this.urls.delete(id); }
+      const db = await this.open();
+      if (db) try { db.transaction('img', 'readwrite').objectStore('img').delete(id); } catch { /* bỏ qua */ }
+    }
+  };
+
+  // ======================================================================= Trạng thái
+
+  const DEFAULT_TEMPLATE = H.omr.parseTemplate(H.DEFAULT_TEMPLATE_JSON);
+  const state = {
+    template: DEFAULT_TEMPLATE, templateIsDefault: true,
+    keys: [], settings: { part3Score: 0.25 },
+    results: [],
+    pendingImport: null, typed: { code: '', p1: '', p2: '', p3: '' }, typedOpen: false,
+    tab: 'keys', busy: null, current: null, batch: [],
+    session: new Map() // id → {clean: Blob, questions, w, h, candidate, examCode}
+  };
+
+  function templateToJson(t) {
+    return { format: 'hamariff-template', code: t.code, name: t.name, version: t.version, pageWidthMm: t.pageWidthMm, pageHeightMm: t.pageHeightMm, layout: { anchors: t.anchors, regions: t.regions } };
+  }
+  function configObject() {
+    return { v: 1, template: state.templateIsDefault ? null : templateToJson(state.template), keys: state.keys, settings: state.settings, updatedAt: Date.now() };
+  }
+  function applyConfig(cfg) {
+    if (!cfg) return;
+    if (cfg.template) {
+      try { state.template = H.omr.parseTemplate(cfg.template); state.templateIsDefault = false; } catch { state.template = DEFAULT_TEMPLATE; state.templateIsDefault = true; }
+    } else { state.template = DEFAULT_TEMPLATE; state.templateIsDefault = true; }
+    state.keys = Array.isArray(cfg.keys) ? cfg.keys.filter(k => k && k.code && Array.isArray(k.items)) : [];
+    state.settings = Object.assign({ part3Score: 0.25 }, cfg.settings || {});
+  }
+  const saveConfig = () => Store.saveConfig(configObject());
+
+  function shortMaxLength() {
+    const r = state.template.regions.find(x => x.kind === 'ShortAnswer');
+    return r ? Math.max(4, H.omr.groupSize(r)) : 4;
+  }
+  const gradeSettings = () => ({ part1Score: 0.25, part3Score: state.settings.part3Score, shortMaxLength: shortMaxLength() });
+  const hasRegion = kind => state.template.regions.some(r => r.kind === kind);
+
+  // ======================================================================= Chấm
+
+  function gradeRecord(rec) {
+    const key = state.keys.find(k => k.code === rec.code);
+    if (!key) {
+      Object.assign(rec, { graded: false, score10: null, raw: null, max: null, correct: 0, partial: 0, incorrect: 0, blank: 0, problems: 0, details: [] });
+      return null;
+    }
+    const g = G.grade(rec.answers.map(a => ({ part: a[0], q: a[1], value: a[2] })), key, gradeSettings());
+    Object.assign(rec, {
+      graded: true, score10: g.score10, raw: g.raw, max: g.max, correct: g.correct, partial: g.partial, incorrect: g.incorrect, blank: g.blank, problems: g.problems,
+      details: g.details.map(d => [d.part, d.q, d.student, d.correct, d.outcome, d.score, d.max])
+    });
+    return g;
+  }
+  const detailsToGrading = rec => (rec.graded ? { details: rec.details.map(d => ({ part: d[0], q: d[1], student: d[2], correct: d[3], outcome: d[4], score: d[5], max: d[6] })) } : null);
+
+  /** Danh sách vấn đề cần người chấm để ý trên một bài. */
+  function recordProblems(rec) {
+    const out = [];
+    if (hasRegion('CandidateNumber') && !rec.sbdOk) out.push({ kind: 'bad', text: rec.sbd && rec.sbd.replace(/[_?*]/g, '') ? `Số báo danh đọc chưa rõ (“${rec.sbd}”) – hãy sửa ở ô Số báo danh.` : 'Không đọc được số báo danh – hãy nhập ở ô Số báo danh.' });
+    if (!rec.code) out.push({ kind: 'bad', text: rec.examCodeRead && /^\d+$/.test(rec.examCodeRead) ? `Mã đề ${rec.examCodeRead} trên phiếu không có trong đáp án – chọn đúng mã đề bên dưới.` : 'Không đọc được mã đề – chọn mã đề bên dưới để chấm.' });
+    for (const d of rec.details || []) {
+      if (d[4] === 'multiple') out.push({ kind: 'warn', text: `Câu ${d[1]} Phần ${ROMAN[d[0]]}: tô nhiều ô – không tính điểm.` });
+      else if (d[4] === 'invalid') out.push({ kind: 'warn', text: `Câu ${d[1]} Phần ${ROMAN[d[0]]}: tô không rõ (tô nhẹ/tẩy chưa sạch) – không tính điểm.` });
+    }
+    return out;
+  }
+
+  async function loadImageFile(file, maxSide) {
+    let src, w, h, revoke = null;
+    try {
+      src = await createImageBitmap(file, { imageOrientation: 'from-image' });
+      w = src.width; h = src.height;
+    } catch {
+      const url = URL.createObjectURL(file); revoke = url;
+      src = await new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => rej(new Error('Không mở được ảnh (định dạng không hỗ trợ).')); im.src = url; });
+      w = src.naturalWidth; h = src.naturalHeight;
+    }
+    try {
+      // Thu nhỏ từng nửa để giảm răng cưa khi ảnh điện thoại rất lớn.
+      let cw = w, ch = h, cur = src;
+      const target = Math.min(1, maxSide / Math.max(w, h));
+      while (cw * target < cw / 2.2) {
+        const c = document.createElement('canvas'); c.width = Math.round(cw / 2); c.height = Math.round(ch / 2);
+        const x = c.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(cur, 0, 0, c.width, c.height);
+        cur = c; cw = c.width; ch = c.height;
+      }
+      const tw = Math.max(1, Math.round(w * target)), th = Math.max(1, Math.round(h * target));
+      const canvas = document.createElement('canvas'); canvas.width = tw; canvas.height = th;
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(cur, 0, 0, tw, th);
+      return { rgba: ctx.getImageData(0, 0, tw, th).data, w: tw, h: th, originalW: w, originalH: h };
+    } finally {
+      if (src && src.close) src.close();
+      if (revoke) URL.revokeObjectURL(revoke);
+    }
+  }
+
+  function rgbaToBlob(rgba, w, h, quality) {
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    c.getContext('2d').putImageData(new ImageData(rgba instanceof Uint8ClampedArray ? rgba : new Uint8ClampedArray(rgba), w, h), 0, 0);
+    return new Promise(res => c.toBlob(b => res(b), 'image/jpeg', quality || 0.85));
+  }
+  async function blobToRgba(blob) {
+    const bmp = await createImageBitmap(blob);
+    const c = document.createElement('canvas'); c.width = bmp.width; c.height = bmp.height;
+    const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(bmp, 0, 0);
+    const out = { rgba: x.getImageData(0, 0, c.width, c.height).data, w: c.width, h: c.height };
+    if (bmp.close) bmp.close();
+    return out;
+  }
+
+  /** Vẽ lại ảnh đã chấm của một bài (từ ảnh nắn phẳng giữ trong phiên). */
+  async function renderRecordImage(rec, res) {
+    let result = res;
+    if (!result) {
+      const s = state.session.get(rec.id);
+      if (!s) return false;
+      const img = await blobToRgba(s.clean);
+      result = { warped: { w: img.w, h: img.h, rgba: img.rgba }, map: H.omr.buildMap(state.template, img.w, img.h), questions: s.questions, candidateNumber: s.candidate, examCode: s.examCode };
+    }
+    const graded = H.omr.renderGraded(result, detailsToGrading(rec));
+    await Img.put(rec.id, await rgbaToBlob(graded, result.warped.w, result.warped.h, 0.85));
+    return true;
+  }
+
+  async function processFiles(files) {
+    if (state.busy) return;
+    if (!state.keys.length) { toast('Hãy nhập đáp án (mã đề) trước khi chấm.'); switchTab('keys'); return; }
+    switchTab('scan');
+    state.batch = files.length > 1 ? [] : state.batch.filter(b => b.keep);
+    for (let i = 0; i < files.length; i++) {
+      const f = files[i];
+      state.busy = { text: files.length > 1 ? `Đang chấm bài ${i + 1}/${files.length}…` : 'Đang nhận diện phiếu…', sub: f.name || 'Ảnh chụp' };
+      render();
+      await nextFrame();
+      let item;
+      try {
+        const img = await loadImageFile(f, 2000);
+        await nextFrame();
+        const res = H.omr.recognize(img, state.template);
+        item = res.ok ? await finishRecognition(res, f.name) : { ok: false, fileName: f.name, error: res.error, warnings: res.warnings || [] };
+      } catch (e) {
+        item = { ok: false, fileName: f.name, error: 'Không xử lý được ảnh: ' + (e && e.message ? e.message : e) };
+      }
+      state.current = item;
+      if (files.length > 1) state.batch.push(item);
+    }
+    state.busy = null;
+    render();
+    if (files.length > 1) {
+      const ok = state.batch.filter(b => b.ok).length;
+      toast(`Đã chấm ${ok}/${files.length} bài.`);
+    }
+  }
+
+  async function finishRecognition(res, fileName) {
+    const codes = state.keys.map(k => k.code);
+    const read = res.examCode ? res.examCode.value : '';
+    let code = res.examCode && res.examCode.complete ? G.matchExamCode(read, codes) : null;
+    if (!code && !res.examCode && codes.length === 1) code = codes[0];
+    const rec = {
+      id: newId(), createdAt: Date.now(), fileName: fileName || '',
+      sbd: res.candidateNumber ? res.candidateNumber.value : '',
+      sbdOk: !!(res.candidateNumber && res.candidateNumber.complete),
+      examCodeRead: read, code: code || '',
+      answers: res.questions.map(q => [q.part, q.q, q.value]),
+      info: res.warnings || []
+    };
+    gradeRecord(rec);
+    state.results.push(rec);
+    await Store.saveResult(rec);
+    state.session.set(rec.id, {
+      clean: await rgbaToBlob(res.warped.rgba, res.warped.w, res.warped.h, 0.9),
+      questions: res.questions, w: res.warped.w, h: res.warped.h, candidate: res.candidateNumber, examCode: res.examCode
+    });
+    await renderRecordImage(rec, res);
+    return { ok: true, id: rec.id, fileName };
+  }
+
+  async function updateRecord(rec, changes) {
+    Object.assign(rec, changes);
+    if ('sbd' in changes) rec.sbdOk = /^\d+$/.test(rec.sbd);
+    gradeRecord(rec);
+    await Store.saveResult(rec);
+    await renderRecordImage(rec);
+    render();
+  }
+
+  async function deleteRecord(id) {
+    state.results = state.results.filter(r => r.id !== id);
+    state.session.delete(id);
+    await Store.deleteResult(id);
+    await Img.del(id);
+    if (state.current && state.current.id === id) state.current = null;
+    state.batch = state.batch.filter(b => b.id !== id);
+  }
+
+  async function regradeAll() {
+    for (const rec of state.results) {
+      gradeRecord(rec);
+      Store.saveResult(rec);
+      if (state.session.has(rec.id)) await renderRecordImage(rec);
+    }
+  }
+
+  // ======================================================================= Đáp án
+
+  async function onExcelFile(files) {
+    const f = files[0];
+    try {
+      const bytes = new Uint8Array(await f.arrayBuffer());
+      const grids = H.xlsx.readXlsx(bytes);
+      const det = H.keys.detectAnswerKeys(grids, { shortMaxLength: shortMaxLength() });
+      det.fileName = f.name;
+      state.pendingImport = det;
+    } catch (e) {
+      state.pendingImport = { found: false, fileName: f.name, keys: [], notes: [], issues: [{ severity: 'error', message: e && e.message ? e.message : String(e) }] };
+    }
+    render();
+  }
+
+  async function savePendingImport() {
+    const d = state.pendingImport;
+    if (!d || !d.keys.length) return;
+    const keys = d.keys.filter(k => k.items.length);
+    const old = state.keys.map(k => k.code);
+    const removed = old.filter(c => !keys.some(k => k.code === c));
+    if (removed.length && !(await confirmBox('Thay toàn bộ đáp án?', `File chỉ có ${keys.length} mã đề. Các mã đề không có trong file sẽ bị xóa: ${removed.join(', ')}. Bài đã chấm theo các mã đề đó sẽ chưa có điểm.`, 'Thay bằng file mới', true))) return;
+    state.keys = keys;
+    state.pendingImport = null;
+    await saveConfig();
+    await regradeAll();
+    render();
+    toast(`Đã lưu ${keys.length} mã đề.`);
+  }
+
+  async function saveTyped() {
+    const t = state.typed;
+    const { key, errors } = G.parseTypedKey(t.code, t.p1, t.p2, t.p3);
+    if (errors.length) { state.typedErrors = errors; render(); return; }
+    const idx = state.keys.findIndex(k => k.code === key.code);
+    if (idx >= 0) state.keys[idx] = key; else state.keys.push(key);
+    state.keys.sort((a, b) => a.code.localeCompare(b.code, 'vi', { numeric: true }));
+    state.typed = { code: '', p1: '', p2: '', p3: '' }; state.typedErrors = null; state.typedOpen = false;
+    await saveConfig();
+    await regradeAll();
+    render();
+    toast(`Đã lưu mã đề ${key.code} (${G.keySummary(key)}).`);
+  }
+
+  async function deleteKey(code) {
+    if (!(await confirmBox(`Xóa mã đề ${code}?`, 'Bài đã chấm theo mã đề này sẽ chưa có điểm cho tới khi nhập lại đáp án.', 'Xóa mã đề', true))) return;
+    state.keys = state.keys.filter(k => k.code !== code);
+    await saveConfig(); await regradeAll(); render();
+  }
+
+  async function deleteAllKeys() {
+    if (!(await confirmBox('Xóa tất cả mã đề?', `Xóa ${state.keys.length} mã đề để nhập lại từ đầu. Kết quả đã chấm vẫn giữ nhưng chưa có điểm.`, 'Xóa tất cả', true))) return;
+    state.keys = []; await saveConfig(); await regradeAll(); render();
+  }
+
+  async function onTemplateFile(files) {
+    const f = files[0];
+    try {
+      const tpl = H.omr.parseTemplate(await f.text());
+      state.template = tpl; state.templateIsDefault = false;
+      await saveConfig();
+      render();
+      toast(`Đã dùng mẫu phiếu “${tpl.name}”.`);
+    } catch (e) {
+      toast(e && e.message ? e.message : 'Không đọc được tệp mẫu phiếu.', 5000);
+    }
+  }
+  async function useDefaultTemplate() {
+    state.template = DEFAULT_TEMPLATE; state.templateIsDefault = true;
+    await saveConfig(); render();
+  }
+
+  // ======================================================================= Xuất kết quả
+
+  function sortedResults() {
+    return state.results.slice().sort((a, b) => (a.sbd || '').localeCompare(b.sbd || '', 'vi', { numeric: true }) || a.createdAt - b.createdAt);
+  }
+  function questionColumns() {
+    const set = new Map();
+    for (const k of state.keys) for (const it of k.items) set.set(it.part * 1000 + it.q, `${ROMAN[it.part]}.${it.q}`);
+    return [...set.entries()].sort((a, b) => a[0] - b[0]);
+  }
+  function resultTable() {
+    const qcols = questionColumns();
+    const head = ['STT', 'Số báo danh', 'Mã đề', 'Điểm/10', 'Điểm thô', 'Tối đa', 'Đúng', 'Đúng một phần', 'Sai', 'Bỏ trống', 'Tô lỗi', 'Ghi chú', 'Thời gian chấm'].concat(qcols.map(c => c[1]));
+    const rows = [head];
+    sortedResults().forEach((r, i) => {
+      const ans = new Map(r.answers.map(a => [a[0] * 1000 + a[1], a[2]]));
+      const notes = recordProblems(r).map(p => p.text.replace(/ – .*$/, '')).join('; ');
+      const d = new Date(r.createdAt);
+      rows.push([i + 1, r.sbd || '', r.code || r.examCodeRead || '', r.graded ? r.score10 : null, r.graded ? r.raw : null, r.graded ? r.max : null,
+        r.graded ? r.correct : null, r.graded ? r.partial : null, r.graded ? r.incorrect : null, r.graded ? r.blank : null, r.graded ? r.problems : null,
+        notes, `${d.toLocaleDateString('vi-VN')} ${d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}`]
+        .concat(qcols.map(c => (ans.get(c[0]) || '').replace(/^_+$/, ''))));
+    });
+    return rows;
+  }
+
+  async function exportXlsx() {
+    const rows = resultTable();
+    const widths = [6, 13, 9, 9, 9, 8, 7, 9, 6, 9, 8, 40, 17].concat(questionColumns().map(() => 7));
+    const bytes = H.xlsx.writeXlsx('Kết quả', rows, widths);
+    const d = new Date(), p = n => String(n).padStart(2, '0');
+    const name = `KetQua_ChamThi_${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}.xlsx`;
+    const c = globalThis.claude;
+    let dl = null;
+    if (c && typeof c.use === 'function') { try { dl = await withTimeout(c.use('downloads'), 4000); } catch { dl = null; } }
+    if (dl) {
+      try { await dl.save({ filename: name, data: new Blob([bytes]) }); toast('Đã lưu file Excel.'); return; }
+      catch (e) { if (e && e.code === 'declined') return; if (e && e.code === 'rate_limited') { toast('Đang có hộp thoại lưu file – hãy thử lại sau giây lát.'); return; } }
+    }
+    try {
+      const url = URL.createObjectURL(new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+      const a = el('a', { href: url, download: name, style: 'display:none' });
+      document.body.append(a); a.click();
+      setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 5000);
+    } catch {
+      toast('Trình duyệt không cho tải file – hãy dùng “Sao chép bảng”.', 4000);
+    }
+  }
+
+  async function copyTable() {
+    const text = resultTable().map(r => r.map(v => (v == null ? '' : typeof v === 'number' ? String(v).replace('.', ',') : String(v).replace(/\t|\n/g, ' '))).join('\t')).join('\n');
+    try { await navigator.clipboard.writeText(text); toast('Đã sao chép – dán vào Excel hoặc Google Sheets.'); }
+    catch {
+      modal((box, close) => {
+        const ta = el('textarea', { class: 'input', style: 'min-height:200px;font-size:12px' }); ta.value = text;
+        box.append(el('h3', null, 'Sao chép bảng điểm'), el('p', { class: 'muted small' }, 'Chạm giữ để chọn tất cả rồi sao chép, sau đó dán vào Excel.'), ta,
+          el('div', { class: 'row mt' }, el('button', { class: 'btn block', onclick: close }, 'Đóng')));
+        setTimeout(() => { ta.focus(); ta.select(); }, 50);
+      });
+    }
+  }
+
+  // ======================================================================= Vẽ giao diện
+
+  const root = () => document.getElementById('app');
+
+  function renderTop() {
+    const s = document.getElementById('sync');
+    if (s) s.textContent = Store.mode === 'cloud' ? 'Lưu trên tài khoản' : 'Lưu trên máy này';
+  }
+
+  function switchTab(t) { state.tab = t; render(); window.scrollTo(0, 0); }
+
+  function render() {
+    const r = root();
+    r.replaceChildren(state.tab === 'keys' ? viewKeys() : state.tab === 'scan' ? viewScan() : viewResults());
+    for (const b of document.querySelectorAll('.tab')) b.classList.toggle('on', b.dataset.tab === state.tab);
+    const badge = document.getElementById('badge');
+    if (badge) { badge.textContent = state.results.length; badge.classList.toggle('hidden', !state.results.length); }
+    renderTop();
+  }
+
+  // ---------------------------------------------------------------- Thẻ "Đáp án"
+
+  function viewKeys() {
+    const wrap = el('div');
+    const tpl = state.template;
+    wrap.append(el('div', { class: 'card' },
+      el('h2', null, el('span', { class: 'step' }, '1'), 'Mẫu phiếu'),
+      el('p', { class: 'hint' }, 'Mặc định là phiếu chuẩn Hamariff. Dùng phiếu khác thì xuất tệp .hmtpl từ phần mềm trên máy tính (Bước 2 · Thiết kế phiếu → Xuất mẫu).'),
+      el('div', { class: 'code' }, icon('file'), el('div', { class: 'grow' }, el('div', { style: 'font-weight:700;color:var(--text);font-size:14.5px' }, tpl.name), el('div', null, H.omr.describeTemplate(tpl)))),
+      el('div', { class: 'row mt-s' },
+        fileButton('Nạp mẫu phiếu (.hmtpl)', null, null, onTemplateFile, 'upload'),
+        state.templateIsDefault ? null : el('button', { class: 'btn ghost', onclick: useDefaultTemplate }, 'Dùng phiếu chuẩn'))));
+
+    const card = el('div', { class: 'card' },
+      el('h2', null, el('span', { class: 'step' }, '2'), 'Mã đề & đáp án'),
+      el('p', { class: 'hint' }, 'Chỉ cần một file Excel: hàng đầu là các mã đề, mỗi hàng bên dưới là đáp án một câu (A–D · ĐĐSS · số). Dùng chung file với phần mềm trên máy tính.'),
+      fileButton('Nhập file Excel đáp án', '.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', null, onExcelFile, 'upload', 'btn primary block'));
+    if (state.pendingImport) card.append(viewImport());
+
+    if (state.keys.length) {
+      card.append(el('div', { class: 'row mt', style: 'justify-content:space-between' },
+        el('b', null, `${state.keys.length} mã đề đã lưu`),
+        el('button', { class: 'btn ghost danger', onclick: deleteAllKeys }, icon('trash'), 'Xóa tất cả')));
+      card.append(el('div', { class: 'codes mt-s' }, state.keys.map(k => el('div', { class: 'code' },
+        el('b', null, k.code), el('span', { class: 'grow' }, `Phần I/II/III: ${G.keySummary(k)}`),
+        el('button', { class: 'btn ghost', 'aria-label': `Sửa mã đề ${k.code}`, onclick: () => { state.typed = Object.assign({ code: k.code }, G.keyToTyped(k)); state.typedOpen = true; state.typedErrors = null; render(); } }, icon('edit')),
+        el('button', { class: 'btn ghost', 'aria-label': `Xóa mã đề ${k.code}`, onclick: () => deleteKey(k.code) }, icon('trash'))))));
+    } else if (!state.pendingImport) {
+      card.append(notice('info', 'Chưa có mã đề nào. Nhập file Excel đáp án hoặc gõ đáp án từng mã đề bên dưới.'));
+    }
+
+    // Gõ tay một mã đề
+    const t = state.typed;
+    const det = el('details', { class: 'more mt-s' }, el('summary', null, t.code && state.keys.some(k => k.code === t.code) ? `Sửa đáp án mã đề ${t.code}` : 'Gõ đáp án một mã đề'));
+    if (state.typedOpen) det.open = true;
+    det.addEventListener('toggle', () => { state.typedOpen = det.open; });
+    const bind = (k, props) => { const i = el(props.tag || 'input', Object.assign({ class: 'input', value: t[k] || '' }, props.attrs)); i.addEventListener('input', () => { state.typed[k] = i.value; }); return i; };
+    det.append(
+      el('label', { class: 'field mt-s' }, el('span', null, 'Mã đề'), bind('code', { attrs: { inputmode: 'numeric', placeholder: 'vd 0101', autocomplete: 'off' } })),
+      el('label', { class: 'field' }, el('span', null, 'Phần I ', el('small', null, '– mỗi câu một chữ A/B/C/D, viết liền')), bind('p1', { tag: 'textarea', attrs: { placeholder: 'ABCDABCDABCD', autocapitalize: 'characters', spellcheck: 'false' } })),
+      el('label', { class: 'field' }, el('span', null, 'Phần II ', el('small', null, '– mỗi câu 4 ký tự Đ/S (gõ D thay Đ), cách nhau dấu cách')), bind('p2', { tag: 'textarea', attrs: { placeholder: 'ĐĐSS SSĐĐ DDSS SSDD', autocapitalize: 'characters', spellcheck: 'false' } })),
+      el('label', { class: 'field' }, el('span', null, 'Phần III ', el('small', null, '– các số cách nhau dấu cách; dấu phẩy là phần thập phân')), bind('p3', { tag: 'textarea', attrs: { placeholder: '-0,5  0,21  10  12,2', spellcheck: 'false' } })),
+      state.typedErrors ? notice('bad', el('ul', null, state.typedErrors.slice(0, 6).map(e => el('li', null, e)))) : null,
+      el('button', { class: 'btn navy block', onclick: saveTyped }, icon('check'), 'Lưu mã đề'));
+    card.append(det);
+    wrap.append(card);
+
+    wrap.append(el('div', { class: 'card' },
+      el('h2', null, el('span', { class: 'step' }, '3'), 'Thang điểm'),
+      el('p', { class: 'hint' }, 'Phần I 0,25 đ/câu · Phần II 0,1 – 0,25 – 0,5 – 1 đ theo số ý đúng · điểm quy về thang 10. Nếu file Excel có cột “Điểm” thì dùng điểm trong file.'),
+      el('div', { class: 'field' }, el('span', null, 'Phần III – mỗi câu đúng được'),
+        el('div', { class: 'seg' }, [[0.25, '0,25 đ (các môn)'], [0.5, '0,5 đ (Toán)']].map(([v, label]) => el('button', {
+          class: state.settings.part3Score === v ? 'on' : '',
+          onclick: async () => { if (state.settings.part3Score === v) return; state.settings.part3Score = v; await saveConfig(); await regradeAll(); render(); }
+        }, label))))));
+
+    wrap.append(el('button', { class: 'btn primary big block', disabled: state.keys.length ? null : true, onclick: () => switchTab('scan') }, icon('camera'), 'Bắt đầu chấm bài', icon('arrow')));
+    return wrap;
+  }
+
+  function viewImport() {
+    const d = state.pendingImport;
+    const errors = d.issues.filter(i => i.severity === 'error'), warns = d.issues.filter(i => i.severity !== 'error');
+    const box = el('div', { class: 'mt' });
+    if (!d.found || !d.keys.length) {
+      box.append(notice('bad', el('div', null, el('b', null, d.fileName ? `${d.fileName}: ` : ''), (errors[0] && errors[0].message) || 'Không tìm thấy bảng đáp án.')));
+      box.append(el('button', { class: 'btn ghost', onclick: () => { state.pendingImport = null; render(); } }, 'Đóng'));
+      return box;
+    }
+    const total = d.keys.reduce((s, k) => s + k.items.length, 0);
+    box.append(notice(errors.length ? 'warn' : 'ok', el('div', null,
+      el('b', null, `Nhận được ${d.keys.length} mã đề`), ` – ${d.description}`,
+      el('div', { class: 'chips mt-s' }, d.keys.map(k => el('span', { class: 'chip pink' }, `${k.code} · ${G.keySummary(k)}`))),
+      d.notes.length ? el('div', { class: 'small mt-s' }, d.notes.join(' ')) : null)));
+    if (errors.length) box.append(notice('bad', el('div', null, el('b', null, `${errors.length} lỗi trong file`), ' (các câu lỗi sẽ không được chấm):',
+      el('ul', null, errors.slice(0, 8).map(e => el('li', null, e.message)), errors.length > 8 ? el('li', null, `… và ${errors.length - 8} lỗi khác`) : null))));
+    if (warns.length) box.append(el('details', { class: 'more small' }, el('summary', null, `${warns.length} lưu ý`), el('ul', null, warns.slice(0, 10).map(w => el('li', null, w.message)))));
+    if (!total) return box;
+    box.append(el('div', { class: 'row mt-s' },
+      el('button', { class: 'btn primary grow', onclick: savePendingImport }, icon('check'), errors.length ? `Vẫn lưu ${d.keys.length} mã đề` : `Lưu tất cả ${d.keys.length} mã đề`),
+      el('button', { class: 'btn', onclick: () => { state.pendingImport = null; render(); } }, 'Hủy')));
+    if (state.keys.length) box.append(el('p', { class: 'small muted', style: 'margin:6px 2px 0' }, `Sẽ thay thế ${state.keys.length} mã đề đang có bằng các mã đề trong file.`));
+    return box;
+  }
+
+  // ---------------------------------------------------------------- Thẻ "Chấm bài"
+
+  function captureButtons(again) {
+    return el('div', { class: 'capture' },
+      fileButton(again ? 'Chụp phiếu tiếp' : 'Chụp phiếu', 'image/*', { capture: true }, processFiles, 'camera', 'btn primary big block'),
+      fileButton('Chọn ảnh có sẵn (nhiều ảnh)', 'image/*', { multiple: true }, processFiles, 'image', 'btn block'));
+  }
+
+  function viewScan() {
+    const wrap = el('div');
+    if (!state.keys.length) {
+      wrap.append(el('div', { class: 'card' }, el('h2', null, 'Chưa có đáp án'), notice('warn', 'Cần nhập đáp án (mã đề) trước khi chấm.'),
+        el('button', { class: 'btn primary block', onclick: () => switchTab('keys') }, icon('key'), 'Nhập đáp án')));
+      return wrap;
+    }
+    if (state.busy) {
+      wrap.append(el('div', { class: 'card' }, el('div', { class: 'busy' }, el('div', { class: 'spinner' }),
+        el('div', null, el('b', null, state.busy.text), el('div', { class: 'small muted' }, state.busy.sub)))));
+      return wrap;
+    }
+    const cur = state.current;
+    if (!cur) {
+      wrap.append(el('div', { class: 'card' },
+        el('h2', null, 'Chụp phiếu trả lời'),
+        el('p', { class: 'hint' }, `Mẫu: ${state.template.name} · ${state.keys.length} mã đề. Phần mềm tự đọc số báo danh, mã đề và chấm ngay.`),
+        captureButtons(false),
+        el('div', { class: 'tips' },
+          el('div', { class: 'tip' }, icon('sun'), 'Đủ sáng, không bóng đổ lên phiếu'),
+          el('div', { class: 'tip' }, icon('frame'), 'Thấy rõ cả 4 ô vuông đen ở góc'),
+          el('div', { class: 'tip' }, icon('phone'), 'Chụp thẳng từ trên xuống'))));
+    } else if (!cur.ok) {
+      wrap.append(el('div', { class: 'card' },
+        el('h2', null, 'Chưa chấm được ảnh này'),
+        notice('bad', el('div', null, el('b', null, cur.error), cur.fileName ? el('div', { class: 'small' }, cur.fileName) : null)),
+        el('ul', { class: 'small muted', style: 'margin:4px 0 12px;padding-left:18px' },
+          el('li', null, 'Đặt phiếu trên mặt phẳng tối màu hơn giấy (mặt bàn), đủ sáng.'),
+          el('li', null, 'Đưa máy thẳng phía trên phiếu, để cả tờ phiếu nằm trong khung, thấy rõ 4 ô vuông đen.'),
+          el('li', null, `Kiểm tra đúng mẫu phiếu đang chọn (${state.template.name}).`)),
+        captureButtons(true)));
+    } else {
+      const rec = state.results.find(r => r.id === cur.id);
+      if (rec) wrap.append(viewRecordCard(rec, true));
+      else wrap.append(el('div', { class: 'card' }, captureButtons(true)));
+    }
+    if (state.batch.length > 1) {
+      wrap.append(el('div', { class: 'card' }, el('h2', null, `Lượt chấm vừa rồi · ${state.batch.length} ảnh`),
+        el('div', { class: 'batch' }, state.batch.map(b => {
+          const rec = b.ok ? state.results.find(r => r.id === b.id) : null;
+          return el('button', { class: state.current === b ? 'sel' : '', onclick: () => { state.current = b; render(); window.scrollTo(0, 0); } },
+            b.ok ? icon(rec && recordProblems(rec).length ? 'alert' : 'check') : icon('alert'),
+            el('span', { class: 'grow' }, b.ok && rec ? `SBD ${rec.sbd || '?'} · mã đề ${rec.code || '?'}` : `${b.fileName || 'Ảnh'} – lỗi`),
+            b.ok && rec ? el('b', null, fmt(rec.score10)) : null);
+        }))));
+    }
+    return wrap;
+  }
+
+  function viewRecordCard(rec, withCapture) {
+    const card = el('div', { class: 'card' });
+    const probs = recordProblems(rec);
+    card.append(el('div', { class: 'score' },
+      el('div', { class: 'big' }, rec.graded ? fmt(rec.score10) : '—', el('small', null, ' /10')),
+      el('div', { class: 'meta' },
+        el('div', { class: 'chips' },
+          el('span', { class: 'chip' }, `SBD ${rec.sbd || '?'}`),
+          el('span', { class: 'chip' }, `Mã đề ${rec.code || rec.examCodeRead || '?'}`)),
+        rec.graded ? el('div', { class: 'chips mt-s' },
+          el('span', { class: 'chip ok' }, `Đúng ${rec.correct}`),
+          rec.partial ? el('span', { class: 'chip warn' }, `Một phần ${rec.partial}`) : null,
+          el('span', { class: 'chip bad' }, `Sai ${rec.incorrect}`),
+          rec.blank ? el('span', { class: 'chip' }, `Trống ${rec.blank}`) : null,
+          rec.problems ? el('span', { class: 'chip warn' }, `Tô lỗi ${rec.problems}`) : null) : null)));
+
+    const bad = probs.filter(p => p.kind === 'bad'), warn = probs.filter(p => p.kind === 'warn');
+    if (bad.length) card.append(notice('bad', el('div', null, bad.map(p => el('div', null, p.text)))));
+    if (warn.length) card.append(notice('warn', el('div', null, warn.map(p => el('div', null, p.text)))));
+    const dups = rec.sbdOk ? state.results.filter(r => r !== rec && r.sbdOk && r.sbd === rec.sbd) : [];
+    if (dups.length) card.append(notice('info', el('div', null,
+      `SBD ${rec.sbd} đã có ${dups.length} bài chấm trước (${dups.map(d => fmt(d.score10) + 'đ').join(', ')}). Nếu đây là ảnh chụp lại cùng bài, xóa bài cũ để không bị trùng.`,
+      el('div', { class: 'mt-s' }, el('button', { class: 'btn', onclick: async () => { for (const d of dups) await deleteRecord(d.id); render(); toast('Đã xóa bài cũ.'); } }, icon('trash'), 'Xóa bài cũ')))));
+
+    const sbdInput = el('input', { class: 'input', inputmode: 'numeric', value: rec.sbd || '', autocomplete: 'off' });
+    sbdInput.addEventListener('change', () => updateRecord(rec, { sbd: sbdInput.value.trim() }));
+    const codeSel = el('select', { class: 'input' },
+      el('option', { value: '' }, '— chọn mã đề —'),
+      state.keys.map(k => { const o = el('option', { value: k.code }, k.code); if (k.code === rec.code) o.selected = true; return o; }));
+    codeSel.addEventListener('change', () => updateRecord(rec, { code: codeSel.value }));
+    card.append(el('div', { class: 'kv' },
+      el('label', { class: 'field' }, el('span', null, 'Số báo danh'), sbdInput),
+      el('label', { class: 'field' }, el('span', null, 'Mã đề'), codeSel)));
+
+    const imgBox = el('div', { class: 'sheet-img' }, el('div', { class: 'empty small' }, 'Đang tải ảnh…'));
+    Img.get(rec.id).then(url => {
+      if (!url) { imgBox.replaceChildren(el('div', { class: 'empty small' }, icon('image'), 'Ảnh bài này chỉ xem được trên máy đã chụp.')); return; }
+      const im = el('img', { src: url, alt: `Phiếu SBD ${rec.sbd} đã chấm` });
+      im.addEventListener('click', () => imgBox.classList.toggle('zoom'));
+      imgBox.replaceChildren(im);
+    });
+    card.append(imgBox, el('div', { class: 'legend' },
+      el('span', null, el('i', { style: 'background:#2E7D32' }), 'Đúng'),
+      el('span', null, el('i', { style: 'background:#D32F2F' }), 'Sai'),
+      el('span', null, el('i', { class: 'ring' }), 'Đáp án đúng'),
+      el('span', null, el('i', { class: 'sq', style: 'background:#F9A825' }), 'Tô lỗi'),
+      el('span', null, el('i', { style: 'background:#1565C0' }), 'SBD/mã đề đọc được')),
+      el('p', { class: 'small muted', style: 'margin:6px 2px 0' }, 'Chạm vào ảnh để phóng to.'));
+    if (rec.info && rec.info.length) card.append(el('p', { class: 'small muted', style: 'margin:6px 2px 0' }, rec.info.join(' ')));
+
+    if (withCapture) {
+      card.append(el('div', { class: 'mt' }, captureButtons(true)));
+      card.append(el('div', { class: 'row mt-s' },
+        el('button', { class: 'btn ghost', onclick: () => openDetail(rec) }, icon('list'), 'Xem từng câu'),
+        el('button', { class: 'btn ghost danger', onclick: async () => { if (await confirmBox('Xóa bài này?', `Xóa kết quả SBD ${rec.sbd || '?'}.`, 'Xóa', true)) { await deleteRecord(rec.id); render(); } } }, icon('trash'), 'Xóa bài này')));
+    }
+    return card;
+  }
+
+  function questionTable(rec) {
+    if (!rec.graded) return notice('warn', 'Bài này chưa được chấm (chưa chọn mã đề có trong đáp án).');
+    const label = { correct: 'Đúng', partial: 'Một phần', incorrect: 'Sai', blank: 'Bỏ trống', multiple: 'Tô nhiều ô', invalid: 'Không rõ', nokey: 'Chưa có đáp án' };
+    return el('table', { class: 'q' },
+      el('thead', null, el('tr', null, el('th', null, 'Câu'), el('th', null, 'Đáp án'), el('th', null, 'Thí sinh'), el('th', null, 'Kết quả'), el('th', { style: 'text-align:right' }, 'Điểm'))),
+      el('tbody', null, rec.details.map(d => el('tr', null,
+        el('td', null, `${ROMAN[d[0]]}.${d[1]}`),
+        el('td', null, d[3] || ''),
+        el('td', null, (d[2] || '').replace(/_/g, '·') || '—'),
+        el('td', { class: `o-${d[4]}` }, label[d[4]] || d[4]),
+        el('td', { style: 'text-align:right' }, fmt(d[5]))))));
+  }
+
+  function openDetail(rec) {
+    modal((box, close) => {
+      box.append(viewRecordCard(rec, false));
+      box.lastChild.style.cssText = 'box-shadow:none;border:0;padding:0';
+      box.append(el('h3', { class: 'mt' }, 'Từng câu'), questionTable(rec),
+        el('div', { class: 'row mt' },
+          el('button', { class: 'btn danger grow', onclick: async () => { if (await confirmBox('Xóa bài này?', `Xóa kết quả SBD ${rec.sbd || '?'}.`, 'Xóa', true)) { await deleteRecord(rec.id); close(); render(); } } }, icon('trash'), 'Xóa bài'),
+          el('button', { class: 'btn grow', onclick: () => { close(); render(); } }, 'Đóng')));
+    });
+  }
+
+  // ---------------------------------------------------------------- Thẻ "Kết quả"
+
+  function viewResults() {
+    const wrap = el('div');
+    const list = sortedResults();
+    if (!list.length) {
+      wrap.append(el('div', { class: 'card' }, el('div', { class: 'empty' }, icon('list'), 'Chưa có bài nào được chấm.'),
+        el('button', { class: 'btn primary block', onclick: () => switchTab('scan') }, icon('camera'), 'Chụp phiếu')));
+      return wrap;
+    }
+    const graded = list.filter(r => r.graded);
+    const avg = graded.length ? graded.reduce((s, r) => s + r.score10, 0) / graded.length : null;
+    const max = graded.length ? Math.max(...graded.map(r => r.score10)) : null;
+    const needs = list.filter(r => recordProblems(r).length).length;
+    wrap.append(el('div', { class: 'card' },
+      el('div', { class: 'stats' },
+        el('div', { class: 'stat' }, el('b', null, list.length), el('span', null, 'bài đã chấm')),
+        el('div', { class: 'stat' }, el('b', null, fmt(avg)), el('span', null, 'điểm trung bình')),
+        el('div', { class: 'stat' }, el('b', null, fmt(max)), el('span', null, 'cao nhất'))),
+      needs ? notice('warn', `${needs} bài cần xem lại (SBD/mã đề chưa rõ hoặc có câu tô lỗi) – đánh dấu ⚠ bên dưới.`) : null,
+      el('div', { class: 'row mt' },
+        el('button', { class: 'btn primary grow', onclick: exportXlsx }, icon('download'), 'Tải Excel'),
+        el('button', { class: 'btn grow', onclick: copyTable }, icon('copy'), 'Sao chép bảng'))));
+
+    const counts = new Map();
+    for (const r of list) if (r.sbdOk) counts.set(r.sbd, (counts.get(r.sbd) || 0) + 1);
+    wrap.append(el('div', { class: 'card', style: 'padding:8px 10px' },
+      el('table', { class: 'list' },
+        el('thead', null, el('tr', null, el('th', null, '#'), el('th', null, 'Số báo danh'), el('th', null, 'Mã đề'), el('th', null, 'Đúng/Sai'), el('th', { style: 'text-align:right' }, 'Điểm'))),
+        el('tbody', null, list.map((r, i) => {
+          const warn = recordProblems(r).length > 0 || (r.sbdOk && counts.get(r.sbd) > 1);
+          return el('tr', { class: 'click', onclick: () => openDetail(r) },
+            el('td', { class: 'muted' }, i + 1),
+            el('td', null, warn ? '⚠ ' : '', r.sbd || '?'),
+            el('td', null, r.code || el('span', { class: 'muted' }, r.examCodeRead || '?')),
+            el('td', { class: 'small muted' }, r.graded ? `${r.correct}/${r.incorrect}` : 'chưa chấm'),
+            el('td', { class: 'num' }, r.graded ? fmt(r.score10) : '—'));
+        })))));
+    wrap.append(el('button', {
+      class: 'btn danger block', onclick: async () => {
+        if (!(await confirmBox('Xóa tất cả kết quả?', `Xóa ${list.length} bài đã chấm. Nên tải Excel trước khi xóa.`, 'Xóa tất cả', true))) return;
+        for (const r of list) await deleteRecord(r.id);
+        state.current = null; state.batch = [];
+        render();
+      }
+    }, icon('trash'), 'Xóa tất cả kết quả'));
+    return wrap;
+  }
+
+  // ======================================================================= Khởi động
+
+  function shell() {
+    document.body.replaceChildren(
+      el('header', { class: 'top' },
+        el('div', { class: 'logo', html: ICON.logo }),
+        el('div', null, el('h1', null, 'Hamariff · Chấm thi'), el('div', { class: 'sub' }, 'Chấm trắc nghiệm bằng điện thoại')),
+        el('span', { class: 'sync', id: 'sync' }, 'Lưu trên máy này')),
+      el('main', { id: 'app' }),
+      el('nav', { class: 'tabs' }, el('div', { class: 'in' },
+        [['keys', 'key', 'Đáp án'], ['scan', 'camera', 'Chấm bài'], ['results', 'list', 'Kết quả']].map(([t, ic, label]) =>
+          el('button', { class: 'tab', 'data-tab': t, onclick: () => switchTab(t) }, icon(ic), label, t === 'results' ? el('span', { class: 'badge hidden', id: 'badge' }) : null)))));
+  }
+
+  async function syncFromCloud(first) {
+    try {
+      const { config, results } = await Store.loadCloud();
+      if (config) applyConfig(config);
+      else if (first && (state.keys.length || !state.templateIsDefault)) await Store.saveConfig(configObject()); // chuyển dữ liệu trên máy lên tài khoản
+      const cloudIds = new Set(results.map(r => r.id));
+      // Lần đầu: đưa các bài chỉ có trên máy lên tài khoản. Các lần sau: giữ bài vừa chấm mà tài khoản chưa kịp ghi.
+      for (const r of state.results) {
+        if (cloudIds.has(r.id)) continue;
+        if (first) { results.push(r); Store.saveResult(r); } else if (Date.now() - r.createdAt < 120000) results.push(r);
+      }
+      state.results = results.filter(r => r && r.id && Array.isArray(r.answers));
+      lsSet(LS_RESULTS, state.results);
+    } catch {
+      if (first) { Store.mode = 'local'; toast('Không kết nối được bộ nhớ tài khoản – đang lưu trên máy này.', 4000); }
+    }
+  }
+
+  async function start() {
+    shell();
+    applyConfig(lsGet(LS_CONFIG, null));
+    state.results = lsGet(LS_RESULTS, []).filter(r => r && r.id && Array.isArray(r.answers));
+    if (state.keys.length) state.tab = 'scan';
+    render();
+    if (await Store.connect()) {
+      await syncFromCloud(true);
+      if (state.keys.length && state.tab === 'keys' && !state.pendingImport) state.tab = 'scan';
+      render();
+      document.addEventListener('visibilitychange', async () => {
+        if (document.visibilityState !== 'visible' || state.busy || Store.mode !== 'cloud') return;
+        await syncFromCloud(false);
+        render();
+      });
+    }
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
+
+</script>
+</body>
+</html>
